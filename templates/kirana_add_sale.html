@@ -20,14 +20,14 @@
                         <input type="text" id="productSearch" class="form-control form-control-lg" placeholder="Start typing name..." autocomplete="off">
                     </div>
                     
-                    <!-- New Scrollable Results List (Hidden by default) -->
-                    <div id="productResults" class="list-group overflow-auto mb-2 d-none" style="max-height: 250px; border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px;">
+                    <!-- Search Results List (Strictly hidden by default) -->
+                    <div id="productResults" class="list-group overflow-auto mb-2" style="max-height: 300px; border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; display: none;">
                         {% for product in products %}
-                        <button type="button" class="list-group-item list-group-item-action product-item d-flex justify-content-between align-items-center" 
+                        <button type="button" class="list-group-item list-group-item-action product-item d-flex justify-content-between align-items-center w-100" 
                                 data-id="{{ product[0] }}" data-name="{{ product[1] }} ({{ product[2] }})">
-                            <div>
-                                <span class="fw-bold">{{ product[1] }}</span>
-                                <small class="text-muted d-block">{{ product[2] }}</small>
+                            <div class="text-start">
+                                <span class="fw-bold d-block">{{ product[1] }}</span>
+                                <small class="text-muted">{{ product[2] }}</small>
                             </div>
                             <span class="text-primary fw-bold">₹{{ "{:,.2f}".format(product[3]) }}</span>
                         </button>
@@ -66,10 +66,9 @@
 
         // Filter Logic
         searchInput.addEventListener('input', function() {
-            const filter = this.value.toLowerCase();
+            const filter = this.value.toLowerCase().trim();
             
             if (filter.length > 0) {
-                resultsContainer.classList.remove('d-none');
                 let hasMatch = false;
                 items.forEach(item => {
                     const text = item.textContent.toLowerCase();
@@ -77,15 +76,17 @@
                     item.style.setProperty('display', isMatch ? 'flex' : 'none', 'important');
                     if (isMatch) hasMatch = true;
                 });
-                if (!hasMatch) resultsContainer.classList.add('d-none');
+                
+                resultsContainer.style.display = hasMatch ? 'block' : 'none';
             } else {
-                resultsContainer.classList.add('d-none');
+                resultsContainer.style.display = 'none';
             }
         });
 
         // Selection Logic
         items.forEach(item => {
-            item.addEventListener('click', function() {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
                 // Clear active from all
                 items.forEach(i => i.classList.remove('active', 'bg-primary-subtle'));
                 
@@ -98,8 +99,8 @@
                 feedback.classList.remove('d-none');
                 saveBtn.disabled = false;
                 
-                // Hide results after selection and clear search
-                resultsContainer.classList.add('d-none');
+                // Hide results after selection and fill search
+                resultsContainer.style.display = 'none';
                 searchInput.value = this.dataset.name;
             });
         });
@@ -135,21 +136,4 @@
         </div>
     </div>
 </div>
-
-<script>
-document.getElementById('productSearch').addEventListener('keyup', function() {
-    let filter = this.value.toUpperCase();
-    let select = document.getElementById('productSelect');
-    let options = select.getElementsByClassName('product-option');
-    
-    for (let i = 0; i < options.length; i++) {
-        let txtValue = options[i].textContent || options[i].innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-            options[i].style.display = "";
-        } else {
-            options[i].style.display = "none";
-        }
-    }
-});
-</script>
 {% endblock %}
