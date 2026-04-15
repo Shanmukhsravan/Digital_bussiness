@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cement Pro | Smart Dashboard</title>
+    <title>Digital_Business | Smart Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <!-- Load Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -15,7 +15,7 @@
             {% if current_app_name == 'Smart Kirana' %}
                 <i class="fas fa-store"></i> SMART<span style="color: var(--accent);">KIRANA</span>
             {% else %}
-                <i class="fas fa-cube"></i> CEMENT<span style="color: var(--accent);">PRO</span>
+                <i class="fas fa-briefcase"></i> DIGITAL<span style="color: var(--accent);">BUSINESS</span>
             {% endif %}
         </div>
 
@@ -23,7 +23,7 @@
         <div class="app-switcher">
             <a href="{{ url_for('switch_app') }}" class="switcher-pill">
                 <i class="fas fa-exchange-alt"></i>
-                <span>Switch to {{ 'Cement Pro' if current_app_name == 'Smart Kirana' else 'Smart Kirana' }}</span>
+                <span>Switch to {{ 'Digital_Business' if current_app_name == 'Smart Kirana' else 'Smart Kirana' }}</span>
             </a>
         </div>
         {% endif %}

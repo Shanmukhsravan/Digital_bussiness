@@ -15,13 +15,13 @@ init_db()
 # Helper to provide current app context
 @app.context_processor
 def utility_processor():
-    return dict(current_app_name=session.get('current_app', 'Cement Pro'))
+    return dict(current_app_name=session.get('current_app', 'Digital_Business'))
 
 @app.route('/switch_app')
 def switch_app():
     # Toggle between apps
     if session.get('current_app') == 'Smart Kirana':
-        session['current_app'] = 'Cement Pro'
+        session['current_app'] = 'Digital_Business'
         return redirect(url_for('dashboard'))
     else:
         session['current_app'] = 'Smart Kirana'
