@@ -1,27 +1,39 @@
 import mysql.connector
 from werkzeug.security import generate_password_hash
+import os
 
-DB = "cement_db" 
+# Database configs with fallbacks to local
+DB_HOST = os.environ.get('DB_HOST', 'localhost')
+DB_USER = os.environ.get('DB_USER', 'root')
+DB_PASSWORD = os.environ.get('DB_PASSWORD', '123456789')
+DB_NAME = os.environ.get('DB_NAME', 'cement_db')
+DB_PORT = os.environ.get('DB_PORT', '3306')
 
 def connect(): 
-    # Connect to MySQL server first to ensure DB exists
-    conn = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="123456789"
-    )
-    cursor = conn.cursor()
-    cursor.execute(f"CREATE DATABASE IF NOT EXISTS {DB}")
-    cursor.close()
-    conn.close()
-
-    # Now connect to the specific database
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="123456789",
-        database=DB
-    )
+    # Attempt to connect to MySQL
+    try:
+        # If port is custom (like Aiven), cast to int
+        port_int = int(DB_PORT)
+        
+        return mysql.connector.connect(
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            database=DB_NAME,
+            port=port_int,
+            ssl_disabled=False if 'aiven' in DB_HOST.lower() else True # Auto-enable SSL for Aiven
+        )
+    except mysql.connector.Error as err:
+        print(f"Error connecting to DB: {err}")
+        # Fallback for local creation if DB doesn't exist yet
+        if err.errno == 1049: # Unknown database
+             conn = mysql.connector.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, port=int(DB_PORT))
+             cursor = conn.cursor()
+             cursor.execute(f"CREATE DATABASE IF NOT EXISTS {DB_NAME}")
+             cursor.close()
+             conn.close()
+             return mysql.connector.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, database=DB_NAME, port=int(DB_PORT))
+        raise err
 
 def init_db(): 
     conn = connect() 

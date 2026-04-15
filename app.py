@@ -9,7 +9,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
 
 app = Flask(__name__) 
-app.secret_key = "super_secret_key_rajanna"
+app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key_rajanna')
 init_db() 
 
 # Helper to provide current app context
