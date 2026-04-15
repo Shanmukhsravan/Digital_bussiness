@@ -416,6 +416,15 @@ def kirana_dashboard():
     result_rev = c.fetchone()
     total_revenues = float(result_rev[0] or 0)
 
+    c.execute("""
+        SELECT p.name, p.variant, SUM(s.quantity) 
+        FROM kirana_sales s 
+        JOIN kirana_products p ON s.product_id = p.id 
+        WHERE DATE(s.date_time) = %s 
+        GROUP BY p.id
+    """, (today,))
+    today_sales_summary = c.fetchall()
+
     conn.close()
     return render_template("kirana_dashboard.html",
                            today_total_profit=today_total_profit,
@@ -425,7 +434,8 @@ def kirana_dashboard():
                            total_profit=today_sales_profit,
                            total_items=total_items,
                            total_revenue=total_revenues,
-                           low_stock_products=low_stock)
+                           low_stock_products=low_stock,
+                           today_sales_summary=today_sales_summary)
 
 # ---------------- KIRANA REPORT ----------------
 @app.route("/kirana/report", methods=["GET", "POST"])
@@ -495,8 +505,19 @@ def kirana_add_sale():
         return redirect(url_for('kirana_add_sale'))
     c.execute("SELECT id, name, variant, price FROM kirana_products")
     products = c.fetchall()
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    c.execute("""
+        SELECT p.name, p.variant, SUM(s.quantity) 
+        FROM kirana_sales s 
+        JOIN kirana_products p ON s.product_id = p.id 
+        WHERE DATE(s.date_time) = %s 
+        GROUP BY p.id
+    """, (today,))
+    today_sales_summary = c.fetchall()
+
     conn.close()
-    return render_template("kirana_add_sale.html", products=products)
+    return render_template("kirana_add_sale.html", products=products, today_sales_summary=today_sales_summary)
 
 # ---------------- KIRANA PALM UPDATE STAFF ----------------
 @app.route("/kirana/palm_update", methods=["GET", "POST"])

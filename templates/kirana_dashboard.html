@@ -47,6 +47,36 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100 animate__animated animate__fadeInLeft">
             <h5 class="mb-4 d-flex align-items-center">
+                <i class="fas fa-history text-primary me-2"></i> Today's Sold Items Summary
+            </h5>
+            {% if today_sales_summary %}
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Item</th>
+                            <th class="text-center">Total Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in today_sales_summary %}
+                        <tr>
+                            <td><strong>{{ item[0] }}</strong> <small class="text-muted">({{ item[1] }})</small></td>
+                            <td class="text-center text-primary fw-bold">{{ item[2] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">No items sold yet today.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 animate__animated animate__fadeInLeft">
+            <h5 class="mb-4 d-flex align-items-center">
                 <i class="fas fa-exclamation-triangle text-warning me-2"></i> Low Stock Alerts
             </h5>
             {% if low_stock_products %}

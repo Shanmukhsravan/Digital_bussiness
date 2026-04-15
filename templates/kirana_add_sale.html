@@ -12,13 +12,17 @@
                 </div>
             </div>
             
-            <form method="post">
+            <form method="post" id="saleForm">
                 <div class="mb-4">
-                    <label class="form-label">Select Product</label>
-                    <select name="product_id" class="form-select form-select-lg" required>
-                        <option value="" disabled selected>Choose a product...</option>
+                    <label class="form-label">Search & Select Product</label>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" id="productSearch" class="form-control form-control-lg" placeholder="Type name to filter...">
+                    </div>
+                    <select name="product_id" id="productSelect" class="form-select form-select-lg" required size="5" style="height: auto;">
+                        <option value="" disabled selected>Select from filtered list...</option>
                         {% for product in products %}
-                        <option value="{{ product[0] }}">
+                        <option value="{{ product[0] }}" class="product-option">
                             {{ product[1] }} ({{ product[2] }}) - ₹{{ "{:,.2f}".format(product[3]) }}
                         </option>
                         {% endfor %}
@@ -37,6 +41,52 @@
             
             <a href="{{ url_for('kirana_dashboard') }}" class="btn btn-link w-100 text-muted text-decoration-none">Back to Dashboard</a>
         </div>
+
+        <!-- Today's Items Sold (Staff View) -->
+        <div class="card mt-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+            <h5 class="mb-3 d-flex align-items-center">
+                <i class="fas fa-history text-primary me-2"></i> Sold Today (Staff Info)
+            </h5>
+            {% if today_sales_summary %}
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Item</th>
+                            <th class="text-center">Total Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in today_sales_summary %}
+                        <tr>
+                            <td><strong>{{ item[0] }}</strong> <small class="text-muted">({{ item[1] }})</small></td>
+                            <td class="text-center"><span class="badge bg-secondary rounded-pill px-3">{{ item[2] }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-3 text-muted">No sales recorded yet today.</div>
+            {% endif %}
+        </div>
     </div>
 </div>
+
+<script>
+document.getElementById('productSearch').addEventListener('keyup', function() {
+    let filter = this.value.toUpperCase();
+    let select = document.getElementById('productSelect');
+    let options = select.getElementsByClassName('product-option');
+    
+    for (let i = 0; i < options.length; i++) {
+        let txtValue = options[i].textContent || options[i].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            options[i].style.display = "";
+        } else {
+            options[i].style.display = "none";
+        }
+    }
+});
+</script>
 {% endblock %}
