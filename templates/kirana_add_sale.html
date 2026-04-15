@@ -14,19 +14,32 @@
             
             <form method="post" id="saleForm">
                 <div class="mb-4">
-                    <label class="form-label">Search & Select Product</label>
+                    <label class="form-label">Search Product</label>
                     <div class="input-group mb-2">
-                        <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        <input type="text" id="productSearch" class="form-control form-control-lg" placeholder="Type name to filter...">
+                        <span class="input-group-text"><i class="fas fa-search text-primary"></i></span>
+                        <input type="text" id="productSearch" class="form-control form-control-lg" placeholder="Start typing name..." autocomplete="off">
                     </div>
-                    <select name="product_id" id="productSelect" class="form-select form-select-lg" required size="5" style="height: auto;">
-                        <option value="" disabled selected>Select from filtered list...</option>
+                    
+                    <!-- New Scrollable Results List -->
+                    <div id="productResults" class="list-group overflow-auto mb-2" style="max-height: 250px; border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px;">
                         {% for product in products %}
-                        <option value="{{ product[0] }}" class="product-option">
-                            {{ product[1] }} ({{ product[2] }}) - ₹{{ "{:,.2f}".format(product[3]) }}
-                        </option>
+                        <button type="button" class="list-group-item list-group-item-action product-item d-flex justify-content-between align-items-center" 
+                                data-id="{{ product[0] }}" data-name="{{ product[1] }} ({{ product[2] }})">
+                            <div>
+                                <span class="fw-bold">{{ product[1] }}</span>
+                                <small class="text-muted d-block">{{ product[2] }}</small>
+                            </div>
+                            <span class="text-primary fw-bold">₹{{ "{:,.2f}".format(product[3]) }}</span>
+                        </button>
                         {% endfor %}
-                    </select>
+                    </div>
+                    
+                    <!-- Hidden field to store actual ID -->
+                    <input type="hidden" name="product_id" id="selected_product_id" required>
+                    
+                    <div id="selectionFeedback" class="alert alert-success py-2 mt-2 d-none">
+                        <small>Selected: <strong id="selectedName">None</strong></small>
+                    </div>
                 </div>
                 
                 <div class="mb-4">
@@ -34,13 +47,51 @@
                     <input type="number" name="quantity" class="form-control form-control-lg text-center" placeholder="1" required min="1">
                 </div>
                 
-                <button type="submit" class="btn btn-success w-100 btn-lg mb-3">
+                <button type="submit" class="btn btn-success w-100 btn-lg mb-3" id="saveBtn" disabled>
                     <i class="fas fa-check-circle me-2"></i> Save Sale
                 </button>
             </form>
             
             <a href="{{ url_for('kirana_dashboard') }}" class="btn btn-link w-100 text-muted text-decoration-none">Back to Dashboard</a>
         </div>
+
+        <script>
+        const searchInput = document.getElementById('productSearch');
+        const items = document.querySelectorAll('.product-item');
+        const hiddenId = document.getElementById('selected_product_id');
+        const feedback = document.getElementById('selectionFeedback');
+        const selectedNameSpan = document.getElementById('selectedName');
+        const saveBtn = document.getElementById('saveBtn');
+
+        // Filter Logic
+        searchInput.addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.setProperty('display', text.includes(filter) ? 'flex' : 'none', 'important');
+            });
+        });
+
+        // Selection Logic
+        items.forEach(item => {
+            item.addEventListener('click', function() {
+                // Clear active from all
+                items.forEach(i => i.classList.remove('active', 'bg-primary-subtle'));
+                
+                // Set current as active
+                this.classList.add('active');
+                
+                // Set hidden ID and feedback
+                hiddenId.value = this.dataset.id;
+                selectedNameSpan.innerText = this.dataset.name;
+                feedback.classList.remove('d-none');
+                saveBtn.disabled = false;
+                
+                // Visual highlight
+                this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        });
+        </script>
 
         <!-- Today's Items Sold (Staff View) -->
         <div class="card mt-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
