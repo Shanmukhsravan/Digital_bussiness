@@ -20,8 +20,8 @@
                         <input type="text" id="productSearch" class="form-control form-control-lg" placeholder="Start typing name..." autocomplete="off">
                     </div>
                     
-                    <!-- New Scrollable Results List -->
-                    <div id="productResults" class="list-group overflow-auto mb-2" style="max-height: 250px; border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px;">
+                    <!-- New Scrollable Results List (Hidden by default) -->
+                    <div id="productResults" class="list-group overflow-auto mb-2 d-none" style="max-height: 250px; border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px;">
                         {% for product in products %}
                         <button type="button" class="list-group-item list-group-item-action product-item d-flex justify-content-between align-items-center" 
                                 data-id="{{ product[0] }}" data-name="{{ product[1] }} ({{ product[2] }})">
@@ -57,6 +57,7 @@
 
         <script>
         const searchInput = document.getElementById('productSearch');
+        const resultsContainer = document.getElementById('productResults');
         const items = document.querySelectorAll('.product-item');
         const hiddenId = document.getElementById('selected_product_id');
         const feedback = document.getElementById('selectionFeedback');
@@ -66,10 +67,20 @@
         // Filter Logic
         searchInput.addEventListener('input', function() {
             const filter = this.value.toLowerCase();
-            items.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.setProperty('display', text.includes(filter) ? 'flex' : 'none', 'important');
-            });
+            
+            if (filter.length > 0) {
+                resultsContainer.classList.remove('d-none');
+                let hasMatch = false;
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    const isMatch = text.includes(filter);
+                    item.style.setProperty('display', isMatch ? 'flex' : 'none', 'important');
+                    if (isMatch) hasMatch = true;
+                });
+                if (!hasMatch) resultsContainer.classList.add('d-none');
+            } else {
+                resultsContainer.classList.add('d-none');
+            }
         });
 
         // Selection Logic
@@ -87,8 +98,9 @@
                 feedback.classList.remove('d-none');
                 saveBtn.disabled = false;
                 
-                // Visual highlight
-                this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                // Hide results after selection and clear search
+                resultsContainer.classList.add('d-none');
+                searchInput.value = this.dataset.name;
             });
         });
         </script>
