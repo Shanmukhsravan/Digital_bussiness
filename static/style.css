@@ -737,3 +737,45 @@ body.dark .switcher-pill {
         justify-content: center;
     }
 }
+
+/* Kirana Specific Beauty Upgrades */
+.app-kirana .card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(16, 185, 129, 0.1);
+    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.05);
+}
+
+body.dark.app-kirana .card {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.app-kirana .stat-card {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(245, 158, 11, 0.05));
+    border-left: 4px solid var(--primary);
+}
+
+.app-kirana .today-highlight {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+}
+
+.app-kirana .highlight-item .highlight-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.app-kirana .highlight-item .highlight-value {
+    color: white !important;
+}
+
+.app-kirana .btn-primary {
+    background: linear-gradient(135deg, var(--primary), #059669);
+    border: none;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.app-kirana .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
