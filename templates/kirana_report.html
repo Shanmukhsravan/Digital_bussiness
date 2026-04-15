@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card animate__animated animate__fadeInUp">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Smart Kirana Sales Report</h4>
+        <div class="text-muted">{{ selected_date }}</div>
+    </div>
+
+    <!-- Date Filter -->
+    <form method="post" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="date" name="date" class="form-control" value="{{ selected_date }}" required>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <div class="dashboard-grid mb-4">
+        <div class="card stat-card" style="box-shadow: none; border: 1px solid #eee;">
+            <div class="card-title text-muted">Total Items Sold</div>
+            <div class="stat-value" style="font-size: 1.5rem;">{{ total_items }}</div>
+        </div>
+        <div class="card stat-card" style="box-shadow: none; border: 1px solid #eee;">
+            <div class="card-title text-muted">Normal Profit</div>
+            <div class="stat-value text-success" style="font-size: 1.5rem;">₹{{ "{:,.2f}".format(total_profit) }}</div>
+        </div>
+        <div class="card stat-card" style="box-shadow: none; border: 1px solid #eee;">
+            <div class="card-title text-muted">Palm Wine Profit</div>
+            <div class="stat-value {{ 'text-success' if palm_profit >= 0 else 'text-danger' }}" style="font-size: 1.5rem;">
+                ₹{{ "{:,.2f}".format(palm_profit) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="highlight-item text-center p-3 rounded-3 bg-dark text-white mb-4">
+        <span class="highlight-label text-light opacity-75">Combined Daily Profit</span>
+        <span class="highlight-value d-block" style="font-size: 2rem;">₹{{ "{:,.2f}".format(total_combined_profit) }}</span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Product</th>
+                    <th class="text-center">Qty Sold</th>
+                    <th class="text-center">Stock Left</th>
+                    <th class="text-end">Item Profit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in report_data %}
+                <tr>
+                    <td><strong>{{ row[0] }}</strong></td>
+                    <td class="text-center"><span class="badge bg-primary rounded-pill px-3">{{ row[1] }}</span></td>
+                    <td class="text-center"><span class="badge {{ 'bg-success' if row[2] > 5 else 'bg-danger' }}">{{ row[2] }}</span></td>
+                    <td class="text-end text-success">₹{{ "{:,.2f}".format(row[3]) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

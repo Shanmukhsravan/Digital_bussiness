@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="animate-fade">
+    <div class="card" style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-size: 1.8rem; margin-bottom: 0.25rem;">
+                    {% if session['role'] == 'admin' %}
+                        Namaskaram, Rajanna
+                    {% else %}
+                        Namaskaram, {{ session['username'] }}
+                    {% endif %}
+                </h1>
+                <p style="opacity: 0.9;"><i class="fas fa-calendar-day"></i> {{ today_date }}</p>
+            </div>
+            <div style="text-align: right; display: flex; align-items: center; gap: 1rem;">
+                {% if session['role'] == 'admin' %}
+                <a href="/switch_panel" class="panel-switch-btn" id="panel-switch-btn" title="Switch Panel View">
+                    <span class="switch-track">
+                        <span class="switch-thumb {% if panel_view == 'staff' %}switched{% endif %}"></span>
+                    </span>
+                    <span class="switch-label">
+                        {% if panel_view == 'admin' %}
+                            <i class="fas fa-shield-halved"></i> Admin
+                        {% else %}
+                            <i class="fas fa-user"></i> Staff
+                        {% endif %}
+                    </span>
+                </a>
+                {% endif %}
+                <div class="badge" style="background: rgba(255,255,255,0.2); font-size: 0.9rem; padding: 0.5rem 1rem;">
+                    <i class="fas fa-shield-halved"></i> {{ panel_view|capitalize if session['role'] == 'admin' else session['role']|capitalize }} View
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ TODAY'S HIGHLIGHT (TOP - Both Panels) ============ -->
+    <div class="today-highlight-bar">
+        <div class="today-item">
+            <div class="today-icon" style="background: rgba(245,158,11,0.15); color: var(--warning);">
+                <i class="fas fa-box"></i>
+            </div>
+            <div>
+                <span class="today-label">Today Sold</span>
+                <span class="today-value">{{ daily_bags }} Bags</span>
+            </div>
+        </div>
+        <div class="today-divider"></div>
+        <div class="today-item">
+            <div class="today-icon" style="background: rgba(99,102,241,0.15); color: var(--primary);">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div>
+                <span class="today-label">Today Revenue</span>
+                <span class="today-value">₹{{ "{:,.0f}".format(daily) }}</span>
+            </div>
+        </div>
+        <div class="today-divider"></div>
+        <div class="today-item">
+            <div class="today-icon" style="background: rgba(16,185,129,0.15); color: var(--secondary);">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div>
+                <span class="today-label">Today Profit</span>
+                <span class="today-value" style="color: var(--secondary);">₹{{ "{:,.0f}".format(daily_profit) }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== ADMIN PANEL VIEW ========== -->
+    {% if panel_view == 'admin' %}
+
+    <!-- Business Overview Stats -->
+    <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="card stat-card" style="border-left: 4px solid var(--primary);">
+            <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Total Bags Loaded</span>
+            <div class="stat-value" style="color: var(--primary);">{{ total_bags_loaded }} <span style="font-size: 0.9rem; opacity: 0.7;">Bags</span></div>
+        </div>
+        <div class="card stat-card" style="border-left: 4px solid var(--secondary);">
+            <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Total Bags Sold</span>
+            <div class="stat-value" style="color: var(--secondary);">{{ total_bags_sold }} <span style="font-size: 0.9rem; opacity: 0.7;">Bags</span></div>
+        </div>
+        <div class="card stat-card" style="border-left: 4px solid var(--warning);">
+            <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Stock Remaining</span>
+            <div class="stat-value" style="color: var(--warning);">{{ total_bags_left }} <span style="font-size: 0.9rem; opacity: 0.7;">Bags</span></div>
+        </div>
+        <div class="card stat-card" style="border-left: 4px solid var(--danger);">
+            <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Bags Wasted</span>
+            <div class="stat-value" style="color: var(--danger);">{{ total_waste }} <span style="font-size: 0.9rem; opacity: 0.7;">Bags</span></div>
+        </div>
+    </div>
+
+    <!-- Brand-Wise Sales Breakdown -->
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+        {% for s in sales %}
+        <div class="card stat-card" style="border-left: 4px solid {% if s[0] == 'JK Super' %}var(--primary){% else %}var(--accent){% endif %}; padding: 1.25rem;">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
+                <span class="brand-tag" style="{% if s[0] == 'Nagarjuna' %}background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.08)); color: var(--accent);{% endif %}">{{ s[0] }}</span>
+                <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Sold</span>
+            </div>
+            <div class="stat-value" style="color: {% if s[0] == 'JK Super' %}var(--primary){% else %}var(--accent){% endif %}; font-size: 1.8rem;">
+                {{ s[1]|int }} <span style="font-size: 0.9rem; opacity: 0.7;">Bags</span>
+            </div>
+            <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Revenue: ₹{{ "{:,.0f}".format(s[2] or 0) }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+
+    <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="card stat-card" style="background: linear-gradient(135deg, rgba(239,68,68,0.04), rgba(239,68,68,0.01)); border: 1px solid rgba(239,68,68,0.12);">
+            <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                <i class="fas fa-shopping-cart" style="color: var(--danger);"></i> Total Investment
+            </span>
+            <div class="stat-value" style="color: var(--danger); font-size: 1.6rem;">₹{{ "{:,.0f}".format(total_investment) }}</div>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Purchase cost of all loads</span>
+        </div>
+        <div class="card stat-card" style="background: linear-gradient(135deg, rgba(99,102,241,0.04), rgba(99,102,241,0.01)); border: 1px solid rgba(99,102,241,0.12);">
+            <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                <i class="fas fa-coins" style="color: var(--primary);"></i> Total Revenue
+            </span>
+            <div class="stat-value" style="color: var(--primary); font-size: 1.6rem;">₹{{ "{:,.0f}".format(total_revenue) }}</div>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">From {{ total_bags_sold }} bags sold</span>
+        </div>
+        <div class="card stat-card" style="background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(16,185,129,0.01)); border: 1px solid rgba(16,185,129,0.15);">
+            <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                <i class="fas fa-chart-line" style="color: var(--secondary);"></i> Total Profit
+            </span>
+            <div class="stat-value" style="color: var(--secondary); font-size: 1.6rem;">₹{{ "{:,.0f}".format(total_profit) }}</div>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Net profit earned</span>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+        <a href="/add_sale" class="btn btn-primary" style="flex: 1; justify-content: center; padding: 1.25rem;">
+            <i class="fas fa-cart-plus"></i> Record New Sale
+        </a>
+        <a href="/add_stock" class="btn btn-secondary" style="flex: 1; justify-content: center; padding: 1.25rem; background: rgba(16, 185, 129, 0.1); color: var(--secondary);">
+            <i class="fas fa-plus-circle"></i> Add New Stock
+        </a>
+    </div>
+
+    <!-- Monthly Breakdown Section -->
+    {% if monthly_breakdown %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="font-size: 1.25rem; margin-bottom: 1.5rem;">
+            <i class="fas fa-calendar-alt" style="color: var(--accent);"></i> Monthly Business Breakdown
+        </h2>
+        <div class="month-timeline">
+            {% for mb in monthly_breakdown %}
+            <div class="month-card">
+                <div class="month-header">
+                    <span class="month-label"><i class="fas fa-calendar"></i> {{ mb.month }}</span>
+                </div>
+                <div class="month-grid">
+                    <div class="month-detail-box" style="border-left: 3px solid var(--primary);">
+                        <span class="detail-label"><i class="fas fa-truck"></i> Bags Purchased</span>
+                        {% for load in mb.loads %}
+                        <div class="detail-item">
+                            <span class="brand-tag">{{ load[0] }}</span>
+                            <strong>{{ load[1] }}</strong> bags
+                        </div>
+                        {% endfor %}
+                        {% if not mb.loads %}
+                        <div class="detail-item" style="opacity: 0.5;">No loads</div>
+                        {% endif %}
+                    </div>
+                    <div class="month-detail-box" style="border-left: 3px solid var(--secondary);">
+                        <span class="detail-label"><i class="fas fa-shopping-bag"></i> Bags Sold</span>
+                        {% for sale in mb.sales %}
+                        <div class="detail-item">
+                            <span class="brand-tag">{{ sale[0] }}</span>
+                            <strong>{{ sale[1] }}</strong> bags @ ₹{{ "{:,.0f}".format(sale[2] / sale[1]) }}/bag
+                        </div>
+                        {% endfor %}
+                        <div class="detail-total">Total: <strong>{{ mb.bags_sold }}</strong> bags sold</div>
+                    </div>
+                    <div class="month-detail-box" style="border-left: 3px solid var(--accent);">
+                        <span class="detail-label"><i class="fas fa-rupee-sign"></i> Financials</span>
+                        <div class="detail-item">
+                            Revenue: <strong style="color: var(--primary);">₹{{ "{:,.0f}".format(mb.revenue) }}</strong>
+                        </div>
+                        <div class="detail-item">
+                            Profit: <strong style="color: var(--secondary);">₹{{ "{:,.0f}".format(mb.profit) }}</strong>
+                        </div>
+                        {% if mb.waste > 0 %}
+                        <div class="detail-item" style="color: var(--danger);">
+                            <i class="fas fa-trash"></i> Waste: <strong>{{ mb.waste }}</strong> bags
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Inventory + Margins Grid -->
+    <div class="grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.25rem;"><i class="fas fa-boxes-stacked" style="color: var(--primary);"></i> Current Inventory</h2>
+                <a href="/add_sale" class="btn btn-primary" style="padding: 0.5rem 1rem;"><i class="fas fa-cart-plus"></i> New Sale</a>
+            </div>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr><th>Brand Name</th><th>Stock (Bags)</th><th>Sale Price / Bag</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for s in stock %}
+                        <tr>
+                            <td><strong>{{ s[0] }}</strong></td>
+                            <td><span style="font-size: 1.1rem; font-weight: 600;">{{ s[1] }}</span></td>
+                            <td style="color: var(--primary); font-weight: 700;">
+                                ₹{{ "{:,.0f}".format(s[2] or 0) }}
+                                <a href="/profit_margin" style="font-size: 0.75rem; opacity: 0.5; margin-left: 0.4rem;"><i class="fas fa-edit"></i></a>
+                            </td>
+                            <td>
+                                {% if s[1] < 50 %}
+                                    <span class="badge badge-danger">Critical</span>
+                                {% elif s[1] < 100 %}
+                                    <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">Low Stock</span>
+                                {% else %}
+                                    <span class="badge badge-success">Healthy</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if waste_summary %}
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(239,68,68,0.04); border-radius: 12px; border: 1px solid rgba(239,68,68,0.1);">
+                <h4 style="font-size: 0.85rem; color: var(--danger); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                    <i class="fas fa-exclamation-triangle"></i> Waste Record
+                </h4>
+                {% for w in waste_summary %}
+                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.9rem;">
+                    <span>{{ w[0] }}</span>
+                    <strong style="color: var(--danger);">{{ w[1] }} bags wasted</strong>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <div class="card" style="padding: 1.25rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Profit Margins</h3>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    {% for margin in margins %}
+                    <div style="padding: 1rem; border-radius: 12px; background: rgba(99, 102, 241, 0.03); border: 1px solid rgba(99, 102, 241, 0.1);">
+                        <div style="font-weight: 600; margin-bottom: 0.25rem;">{{ margin[0] }}</div>
+                        <div style="font-size: 0.85rem; color: var(--secondary); font-weight: 600;">
+                            {% if margin[1] == 'rupees' %}₹{{ margin[2] }} per bag{% else %}{{ margin[2] }}% margin{% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <a href="/profit_margin" class="btn btn-secondary" style="font-size: 0.85rem; justify-content: center;">
+                        <i class="fas fa-edit"></i> Edit Margins
+                    </a>
+                </div>
+            </div>
+            <div class="card" style="padding: 1.25rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+                    <i class="fas fa-truck-loading"></i> Loads History
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    {% for load in loads %}
+                    <div class="load-timeline-item">
+                        <div class="load-dot"></div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.95rem;">{{ load[3] }}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">{{ load[2] }}</div>
+                            <div style="margin-top: 0.25rem;">
+                                <span class="brand-tag">{{ load[0] }}</span>
+                                <strong>{{ load[1] }}</strong> bags
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== STAFF PANEL VIEW ========== -->
+    {% else %}
+
+    <div class="stats-grid">
+        <div class="card stat-card">
+            <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">Total Stock Remaining</span>
+            <div class="stat-value" style="color: var(--primary);">{{ total_bags_left }} <span style="font-size: 1rem; opacity: 0.7;">Bags</span></div>
+        </div>
+        <div class="card stat-card">
+            <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">Total Bags Sold</span>
+            <div class="stat-value" style="color: var(--secondary);">{{ total_bags_sold }} <span style="font-size: 1rem; opacity: 0.7;">Bags</span></div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+        <a href="/add_sale" class="btn btn-primary" style="flex: 1; justify-content: center; padding: 1.25rem;">
+            <i class="fas fa-cart-plus"></i> Record New Sale
+        </a>
+    </div>
+
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.25rem;"><i class="fas fa-boxes-stacked" style="color: var(--primary);"></i> Current Inventory</h2>
+            <a href="/add_sale" class="btn btn-primary" style="padding: 0.5rem 1rem;"><i class="fas fa-cart-plus"></i> New Sale</a>
+        </div>
+        <div class="table-container">
+            <table class="table">
+                <thead><tr><th>Brand Name</th><th>Stock (Bags)</th><th>Sale Price / Bag</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for s in stock %}
+                    <tr>
+                        <td><strong>{{ s[0] }}</strong></td>
+                        <td><span style="font-size: 1.1rem; font-weight: 600;">{{ s[1] }}</span></td>
+                        <td style="color: var(--primary); font-weight: 700;">₹{{ "{:,.0f}".format(s[2] or 0) }}</td>
+                        <td>
+                            {% if s[1] < 50 %}<span class="badge badge-danger">Critical</span>
+                            {% elif s[1] < 100 %}<span class="badge" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">Low Stock</span>
+                            {% else %}<span class="badge badge-success">Healthy</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card" style="padding: 1.25rem;">
+        <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted);">Quick Actions</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="/add_sale" class="btn btn-primary" style="justify-content: center;"><i class="fas fa-plus"></i> Add New Sale</a>
+            <a href="/customers" class="btn btn-secondary" style="justify-content: center;"><i class="fas fa-search"></i> Search Ledger</a>
+        </div>
+    </div>
+
+    {% endif %}
+
+    <!-- Recent Activity (Both panels) -->
+    <div class="card" style="margin-top: 2rem;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 1.5rem;"><i class="fas fa-history" style="color: var(--accent);"></i> Recent Activity</h3>
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+            {% for sale in recent_sales %}
+            <div style="padding: 1.25rem; border-radius: 16px; background: var(--bg-light); border: 1px solid rgba(0,0,0,0.03);">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+                    <div>
+                        <div style="font-weight: 700; font-size: 1rem;">{{ sale[3] or 'Guest Customer' }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);"><i class="fas fa-map-marker-alt"></i> {{ sale[4] or 'Unknown' }}</div>
+                    </div>
+                    <span class="badge" style="background: white; border: 1px solid rgba(0,0,0,0.05);">{{ sale[2] }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span><strong>{{ sale[1] }}</strong> bags of {{ sale[0] }}</span>
+                    <span style="color: var(--secondary); font-weight: 600;">{{ sale[5] }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

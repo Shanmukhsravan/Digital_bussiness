@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card animate__animated animate__fadeInUp">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Kirana Price List</h4>
+        <div class="text-muted">Quick Reference</div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-4">
+        <input type="text" id="itemSearch" class="form-control" placeholder="Search items..." onkeyup="filterItems()">
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle" id="itemsTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Product Name</th>
+                    <th>Variant</th>
+                    <th class="text-end">Selling Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr class="item-row">
+                    <td><strong>{{ item[0] }}</strong></td>
+                    <td>{{ item[1] }}</td>
+                    <td class="text-end text-primary fw-bold" style="font-size: 1.1rem;">₹{{ "{:,.2f}".format(item[2]) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{{ url_for('kirana_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+function filterItems() {
+    let input = document.getElementById("itemSearch");
+    let filter = input.value.toUpperCase();
+    let table = document.getElementById("itemsTable");
+    let tr = table.getElementsByClassName("item-row");
+
+    for (let i = 0; i < tr.length; i++) {
+        let name = tr[i].getElementsByTagName("td")[0];
+        let variant = tr[i].getElementsByTagName("td")[1];
+        if (name || variant) {
+            let txtValue = (name.textContent || name.innerText) + " " + (variant.textContent || variant.innerText);
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

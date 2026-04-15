@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="animate-fade">
+    <div class="card" style="background: linear-gradient(135deg, #334155, #1e293b); color: white; border: none; margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fas fa-users-viewfinder"></i> Customer Ledger</h1>
+                <p style="opacity: 0.8;">Comprehensive record of all retail transactions.</p>
+            </div>
+            {% if session['role'] == 'admin' %}
+                <button onclick="togglePastSaleForm()" class="btn btn-primary" style="background: white; color: var(--bg-dark); border: none;">
+                    <i class="fas fa-history"></i> Add Past Record
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Add Past Sale Form (Admin Only, Hidden by Default) -->
+    {% if session['role'] == 'admin' %}
+    <div id="pastSaleForm" class="card" style="display: none; border: 2px dashed var(--primary); background: rgba(99, 102, 241, 0.02);">
+        <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-plus-circle"></i> Enter Past Transaction Data</h3>
+        <form action="/add_past_sale" method="post">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input name="customer_name" class="form-control" placeholder="Full Name" >
+                </div>
+                <div class="form-group">
+                    <label>Village</label>
+                    <input name="customer_village" class="form-control" placeholder="Village Name">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input name="customer_phone" class="form-control" placeholder="10-digit mobile">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                <div class="form-group">
+                    <label>Brand</label>
+                    <select name="brand" class="form-control" required>
+                        {% for brand in brands %}
+                            <option value="{{ brand }}">{{ brand }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quantity (Bags)</label>
+                    <input type="number" name="quantity" class="form-control" placeholder="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Sale Price (per bag)</label>
+                    <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                <div class="form-group">
+                    <label>Profit Type</label>
+                    <select name="profit_type" class="form-control">
+                        <option value="rupees">Fixed Amount (₹)</option>
+                        <option value="percentage">Percentage (%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Profit Value (Margin)</label>
+                    <input type="number" step="0.01" name="profit_value" class="form-control" placeholder="Margin on that day" required>
+                </div>
+                <div class="form-group">
+                    <label>Date of Sale</label>
+                    <input type="date" name="date" class="form-control" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                <div class="form-group">
+                    <label>Load Source</label>
+                    <select name="load_source" class="form-control">
+                        {% for load in loads %}
+                            <option value="{{ load }}">{{ load }}</option>
+                        {% endfor %}
+                        <option value="Manual Entry">Manual / Legacy</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select name="payment_method" class="form-control">
+                        <option value="Cash">Cash</option>
+                        <option value="UPI">UPI</option>
+                        <option value="PhonePe">PhonePe</option>
+                        <option value="Credit">Credit (Udhari)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;">
+                    <i class="fas fa-check"></i> Save Record
+                </button>
+                <button type="button" onclick="togglePastSaleForm()" class="btn btn-secondary">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- Filter, Search & Sort Section -->
+    <div class="card">
+        <form method="get" action="/customers" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap;">
+            <div style="flex: 1; position: relative; min-width: 200px;">
+                <i class="fas fa-search" style="position: absolute; left: 1rem; top: 1rem; opacity: 0.5;"></i>
+                <input name="search" class="form-control" placeholder="Search by name, village or phone..." value="{{ search }}" style="padding-left: 2.5rem;">
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+            {% if search %}
+                <a href="/customers" class="btn btn-secondary"><i class="fas fa-times"></i> Clear</a>
+            {% endif %}
+        </form>
+
+        <!-- Sort Buttons -->
+        <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center;">
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+                <i class="fas fa-sort"></i> Sort By:
+            </span>
+            <a href="/customers?sort=date_desc{% if search %}&search={{ search }}{% endif %}" 
+               class="sort-btn {% if sort_by == 'date_desc' or not sort_by %}active{% endif %}">
+                <i class="fas fa-calendar-arrow-down"></i> Newest First
+            </a>
+            <a href="/customers?sort=date_asc{% if search %}&search={{ search }}{% endif %}" 
+               class="sort-btn {% if sort_by == 'date_asc' %}active{% endif %}">
+                <i class="fas fa-calendar-arrow-up"></i> Oldest First
+            </a>
+            <a href="/customers?sort=cash{% if search %}&search={{ search }}{% endif %}" 
+               class="sort-btn {% if sort_by == 'cash' %}active{% endif %}">
+                <i class="fas fa-money-bill-wave"></i> Cash Only
+            </a>
+            <a href="/customers?sort=upi{% if search %}&search={{ search }}{% endif %}" 
+               class="sort-btn {% if sort_by == 'upi' %}active{% endif %}">
+                <i class="fas fa-mobile-screen"></i> UPI Only
+            </a>
+            <a href="/customers?sort=credit{% if search %}&search={{ search }}{% endif %}" 
+               class="sort-btn {% if sort_by == 'credit' %}active{% endif %}">
+                <i class="fas fa-hand-holding-dollar"></i> Credit Only
+            </a>
+        </div>
+
+        <div class="table-container">
+            <table class="table" id="ledgerTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer Details</th>
+                        <th>Transaction Details</th>
+                        <th>Payment</th>
+                        {% if session['role'] == 'admin' %}<th>Actions</th>{% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in customers %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">{{ c[2] }}</div>
+                            <div style="font-size: 0.75rem; opacity: 0.7; margin-top: 0.25rem;">
+                                <i class="fas fa-truck-ramp-box"></i> {{ c[8] or 'Direct Stock' }}
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 700; color: var(--text-light);">{{ c[3] or 'Guest' }}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">
+                                <i class="fas fa-location-dot"></i> {{ c[4] or '---' }}
+                                {% if c[7] %} | <i class="fas fa-phone"></i> {{ c[7] }}{% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 600;">{{ c[0] }}</div>
+                            <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">{{ c[1] }} Bags</span>
+                        </td>
+                        <td>
+                            {% if c[5] == 'Cash' %}
+                                <span class="badge badge-success"><i class="fas fa-money-bill-wave"></i> Cash</span>
+                            {% elif c[5] == 'UPI' %}
+                                <span class="badge" style="background: rgba(99,102,241,0.1); color: var(--primary);"><i class="fas fa-mobile-screen"></i> UPI</span>
+                            {% elif c[5] == 'Credit' %}
+                                <span class="badge badge-danger"><i class="fas fa-hand-holding-dollar"></i> Credit</span>
+                            {% else %}
+                                <span class="badge" style="background: rgba(100,116,139,0.1); color: var(--text-muted);">{{ c[5] }}</span>
+                            {% endif %}
+                        </td>
+                        {% if session['role'] == 'admin' %}
+                        <td>
+                            <a href="/edit_customer/{{ c[6] }}" class="btn btn-secondary" style="padding: 0.4rem 0.75rem; font-size: 0.85rem;">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 4rem; color: var(--text-muted); opacity: 0.5;">
+                                <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                                No customer records found.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Record Count -->
+        <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(99,102,241,0.03); border-radius: 10px; font-size: 0.85rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+            <span><i class="fas fa-database"></i> Showing <strong>{{ customers|length }}</strong> records</span>
+            {% if sort_by and sort_by != 'date_desc' %}
+            <span>Sorted by: <strong>{{ sort_by|replace('_', ' ')|capitalize }}</strong></span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePastSaleForm() {
+        const form = document.getElementById('pastSaleForm');
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+            form.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            form.style.display = 'none';
+        }
+    }
+</script>
+
+{% endblock %}

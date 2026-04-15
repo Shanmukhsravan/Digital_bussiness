@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="animate-fade" style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;"><i class="fas fa-cart-plus"></i> Record a Sale</h2>
+        
+        <form method="post">
+            <div class="form-group">
+                <label>Customer Name (Optional)</label>
+                <input name="customer_name" class="form-control" placeholder="e.g. John Doe">
+            </div>
+
+            <div class="form-group">
+                <label>Village (Optional)</label>
+                <input name="customer_village" class="form-control" placeholder="e.g. Green Valley">
+            </div>
+
+            <hr style="margin: 1.5rem 0; opacity: 0.1;">
+
+            <div class="form-group">
+                <label>Brand Name</label>
+                <select name="brand" class="form-control" required>
+                    <option value="" disabled selected>Select a brand</option>
+                    {% for b in brands %}
+                    <option value="{{ b }}">{{ b }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Quantity (Bags)</label>
+                    <input name="quantity" id="qty" type="number" class="form-control" required oninput="calculate()">
+                </div>
+                <div class="form-group">
+                    <label>Price per Bag</label>
+                    <input name="price" id="price" type="number" step="0.01" class="form-control" required oninput="calculate()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Payment Method</label>
+                <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="radio" name="payment_method" value="Cash" checked style="width: 20px; height: 20px;">
+                        <span><i class="fas fa-money-bill-wave" style="color: #10b981;"></i> Cash</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="radio" name="payment_method" value="PhonePe" style="width: 20px; height: 20px;">
+                        <span><i class="fas fa-mobile-screen-button" style="color: #6366f1;"></i> PhonePe</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="calculator-box">
+                <div style="font-size: 0.9rem; opacity: 0.9;">Total to Pay</div>
+                <div class="calc-total" id="total">₹0</div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 2;">Confirm Sale</button>
+                <a href="/" class="btn" style="flex: 1; background: rgba(0,0,0,0.05); justify-content: center;">Skip/Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function calculate() {
+        const qty = document.getElementById('qty').value || 0;
+        const price = document.getElementById('price').value || 0;
+        const total = qty * price;
+        document.getElementById('total').innerText = '₹' + total.toLocaleString('en-IN');
+    }
+</script>
+
+{% endblock %}

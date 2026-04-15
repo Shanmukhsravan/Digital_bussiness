@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card animate__animated animate__zoomIn">
+            <h4 class="text-center mb-4">Palm Wine Daily Admin</h4>
+
+            <div class="alert alert-info py-2 small text-center mb-4">
+                Record the amount spent on purchase to calculate profit.
+            </div>
+
+            <form method="post" class="mb-5">
+                <div class="mb-3">
+                    <label class="form-label">Money Spent Today (₹)</label>
+                    <input type="number" step="0.01" name="money_spent" class="form-control form-control-lg text-center" 
+                           value="{{ money_spent }}" placeholder="0.00" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Save Investment</button>
+            </form>
+
+            <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="text-center p-3 border rounded-3 bg-light">
+                    <div class="text-muted small">Glasses Sold</div>
+                    <div class="h3 mb-0">{{ glasses_sold }}</div>
+                </div>
+                <div class="text-center p-3 border rounded-3 bg-light">
+                    <div class="text-muted small">Daily Revenue</div>
+                    <div class="h3 mb-0 text-primary">₹{{ "{:,.2f}".format(revenue) }}</div>
+                </div>
+            </div>
+
+            <div class="mt-4 p-4 rounded-3 text-center {{ 'bg-success-subtle' if profit_loss >= 0 else 'bg-danger-subtle' }}">
+                <div class="text-muted small">Profit / Loss</div>
+                <div class="h2 mb-0 {{ 'text-success' if profit_loss >= 0 else 'text-danger' }}">
+                    ₹{{ "{:,.2f}".format(profit_loss) }}
+                </div>
+            </div>
+
+            <a href="{{ url_for('kirana_dashboard') }}" class="btn btn-outline-secondary w-100 mt-4">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

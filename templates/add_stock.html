@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="animate-fade" style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;"><i class="fas fa-plus-circle"></i> Update Stock Inventory</h2>
+        
+        <form method="post">
+            <div class="form-group">
+                <label>Brand Name</label>
+                <input name="brand" class="form-control" required placeholder="e.g. UltraTech">
+            </div>
+
+            <div class="form-group">
+                <label>Quantity to Add (Bags)</label>
+                <input name="quantity" type="number" class="form-control" required placeholder="e.g. 500">
+            </div>
+
+            <div class="form-group">
+                <label>Current Buying Price (Optional)</label>
+                <input name="price" type="number" step="0.01" class="form-control" placeholder="e.g. 380">
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 2;">Update Stock</button>
+                <a href="/" class="btn" style="flex: 1; background: rgba(0,0,0,0.05); justify-content: center;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

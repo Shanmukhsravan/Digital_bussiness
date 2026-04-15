@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="animate-fade" style="max-width: 960px; margin: 0 auto;">
+    <div class="card" style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; margin-bottom: 2rem;">
+        <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fas fa-sliders"></i> Admin Settings Panel</h1>
+        <p style="opacity: 0.9;">Manage item sale prices and profit margin calculations visible to all staff.</p>
+    </div>
+
+    <!-- Section 1: Item Sale Prices -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;"><i class="fas fa-tags" style="color: var(--secondary);"></i> Item Sale Prices</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Set the selling price per bag for each brand. Staff will see this price on their dashboard but cannot edit it.</p>
+
+        <form action="/set_price" method="post" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Select Brand</label>
+                <select name="brand" class="form-control" required>
+                    {% for brand in brands %}
+                        <option value="{{ brand }}">{{ brand }} — Current: ₹{{ "{:,.0f}".format(brand_prices.get(brand, 0)) }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>New Sale Price (₹ per bag)</label>
+                <input type="number" step="0.01" name="price" class="form-control" required placeholder="e.g. 460">
+            </div>
+            <button type="submit" class="btn btn-primary" style="white-space: nowrap; padding: 0.75rem 1.5rem;">
+                <i class="fas fa-save"></i> Update Price
+            </button>
+        </form>
+
+        <!-- Current Prices Table -->
+        <div class="table-container" style="margin-top: 1.5rem;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Brand</th>
+                        <th>Current Sale Price</th>
+                        <th>Staff Visibility</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for brand, price in brand_prices.items() %}
+                    <tr>
+                        <td style="font-weight: 700;">{{ brand }}</td>
+                        <td style="color: var(--secondary); font-weight: 700; font-size: 1.1rem;">₹{{ "{:,.2f}".format(price) }}</td>
+                        <td><span class="badge badge-success"><i class="fas fa-eye"></i> Visible to Staff</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 2: Profit Margins -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div class="card">
+            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;"><i class="fas fa-percent" style="color: var(--accent);"></i> Profit Margin Settings</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">Define how profit is calculated for each brand in your dashboard analytics.</p>
+
+            <form action="/profit_margin" method="post">
+                <div class="form-group">
+                    <label>Select Brand</label>
+                    <select name="brand" class="form-control" required>
+                        {% for brand in brands %}
+                            <option value="{{ brand }}">{{ brand }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Calculation Type</label>
+                    <select name="profit_type" class="form-control" id="profit_type" required>
+                        <option value="rupees">Fixed Amount (₹)</option>
+                        <option value="percentage">Percentage (%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="margin_label">Profit per Bag (₹)</label>
+                    <input type="number" step="0.01" name="profit_value" class="form-control" required placeholder="0.00">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    <i class="fas fa-save"></i> Save Margin
+                </button>
+            </form>
+        </div>
+
+        <!-- Current Margins Table -->
+        <div class="card">
+            <h3 style="font-size: 1rem; margin-bottom: 1.25rem;"><i class="fas fa-chart-bar" style="color: var(--primary);"></i> Active Margin Settings</h3>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Brand</th>
+                            <th>Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for brand, data in margins.items() %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ brand }}</td>
+                            <td>
+                                {% if data.type == 'rupees' %}
+                                    <span style="color: var(--secondary); font-weight: 700;">₹{{ data.value }}</span>
+                                    <span style="font-size: 0.8rem; opacity: 0.6;">/bag</span>
+                                {% else %}
+                                    <span style="color: var(--primary); font-weight: 700;">{{ data.value }}%</span>
+                                    <span style="font-size: 0.8rem; opacity: 0.6;">of price</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('profit_type').addEventListener('change', function() {
+        const label = document.getElementById('margin_label');
+        label.innerText = this.value === 'rupees' ? 'Profit per Bag (₹)' : 'Profit Percentage (%)';
+    });
+</script>
+
+{% endblock %}

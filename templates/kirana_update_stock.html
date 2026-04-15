@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card animate__animated animate__fadeInUp">
+            <h4 class="text-center mb-4">Update Kirana Stock</h4>
+            
+            <form method="post">
+                <div class="mb-4">
+                    <label class="form-label">Select Product</label>
+                    <select name="product_id" class="form-select form-select-lg" required>
+                        <option value="" disabled selected>Choose a item...</option>
+                        {% for product in products %}
+                        <option value="{{ product[0] }}">
+                            {{ product[1] }} ({{ product[2] }}) - Current Stock: {{ product[3] }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label">Quantity to Add</label>
+                    <input type="number" name="added_stock" class="form-control form-control-lg text-center" 
+                           placeholder="0" required min="1">
+                    <div class="form-text text-center mt-2">New stock will be added to the current units.</div>
+                </div>
+                
+                <button type="submit" class="btn btn-warning w-100 py-3 mb-3">
+                    <i class="fas fa-cubes me-2"></i> Update Stock
+                </button>
+            </form>
+            
+            <a href="{{ url_for('kirana_add_sale') }}" class="btn btn-link w-100 text-muted text-decoration-none">Back to Sale Entry</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

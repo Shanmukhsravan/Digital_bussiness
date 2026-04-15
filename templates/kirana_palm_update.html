@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card animate__animated animate__fadeInUp">
+            <h4 class="text-center mb-4">Update Palm Wine</h4>
+            
+            <div class="text-center mb-4">
+                <div class="p-3 bg-light rounded-circle d-inline-block">
+                    <i class="fas fa-glass-martini-alt fa-3x text-primary"></i>
+                </div>
+                <p class="text-muted mt-2">Recording glasses sold today</p>
+            </div>
+
+            <form method="post">
+                <div class="mb-4">
+                    <label class="form-label d-block text-center">New Glasses Sold</label>
+                    <input type="number" name="glasses_sold" class="form-control form-control-lg text-center" 
+                           placeholder="0" required min="1">
+                    <div class="form-text text-center mt-2">This will be added to the daily total.</div>
+                </div>
+                
+                <button type="submit" class="btn btn-success w-100 py-3">
+                    <i class="fas fa-plus me-2"></i> Add Record
+                </button>
+            </form>
+            
+            <a href="{{ url_for('kirana_add_sale') }}" class="btn btn-outline-secondary w-100 mt-3">Back to Sale Entry</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

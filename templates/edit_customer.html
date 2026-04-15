@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="animate-fade" style="max-width: 600px; margin: 0 auto;">
+    <div class="card" style="background: linear-gradient(to right, #6366f1, #a855f7); color: white; margin-bottom: 2rem;">
+        <h1><i class="fas fa-edit"></i> Edit Customer Details</h1>
+        <p style="opacity: 0.9;">Updating record for <strong>{{ customer[4] }}</strong> ({{ customer[5] }} bags)</p>
+    </div>
+
+    <div class="card">
+        <form method="post">
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input name="customer_name" class="form-control" value="{{ customer[0] or '' }}" placeholder="Name">
+                </div>
+                <div class="form-group">
+                    <label>Village</label>
+                    <input name="customer_village" class="form-control" value="{{ customer[1] or '' }}" placeholder="Village">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <div style="position: relative;">
+                    <i class="fas fa-phone" style="position: absolute; left: 1rem; top: 1rem; opacity: 0.5;"></i>
+                    <input name="customer_phone" class="form-control" value="{{ customer[2] or '' }}" placeholder="Phone Number" style="padding-left: 2.5rem;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Payment Method</label>
+                <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="radio" name="payment_method" value="Cash" {% if customer[3] == 'Cash' %}checked{% endif %} style="width: 20px; height: 20px;">
+                        <span><i class="fas fa-money-bill-wave" style="color: #10b981;"></i> Cash</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="radio" name="payment_method" value="PhonePe" {% if customer[3] == 'PhonePe' %}checked{% endif %} style="width: 20px; height: 20px;">
+                        <span><i class="fas fa-mobile-screen-button" style="color: #6366f1;"></i> PhonePe</span>
+                    </label>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center; padding: 1rem;">
+                    Save Changes
+                </button>
+                <a href="/customers" class="btn" style="flex: 1; background: rgba(0,0,0,0.05); justify-content: center; padding: 1rem;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
