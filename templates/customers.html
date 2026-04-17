@@ -158,6 +158,7 @@
                         <th>Date</th>
                         <th>Customer Details</th>
                         <th>Transaction Details</th>
+                        <th>Profit / Earned</th>
                         <th>Payment</th>
                         {% if session['role'] == 'admin' %}<th>Actions</th>{% endif %}
                     </tr>
@@ -183,6 +184,18 @@
                             <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">{{ c[1] }} Bags</span>
                             <div style="margin-top: 0.25rem; font-size: 0.85rem; color: var(--primary); font-weight: 600;">
                                 ₹{{ "{:,.2f}".format(c[9] or 0) }} / bag
+                            </div>
+                        </td>
+                        <td>
+                            {% set sale_price = c[9] or 0 %}
+                            {% set buy_price = c[10] or 0 %}
+                            {% set qty = c[1] or 0 %}
+                            {% set profit_per_bag = sale_price - buy_price %}
+                            {% set total_profit = (sale_price - buy_price) * qty %}
+                            
+                            <div style="font-weight: 700; color: var(--secondary);">₹{{ "{:,.2f}".format(total_profit) }}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem;">
+                                ({{ "{:,.0f}".format(sale_price) }} - {{ "{:,.0f}".format(buy_price) }}) × {{ qty }}
                             </div>
                         </td>
                         <td>

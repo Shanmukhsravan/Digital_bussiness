@@ -92,53 +92,7 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-# ---------------- PROFIT MARGINS ----------------
-@app.route('/profit_margin', methods=['GET', 'POST'])
-@login_required
-def profit_margin():
-    if session.get('role') != 'admin':
-        return "Access Denied", 403
-    
-    conn = connect()
-    c = conn.cursor()
-    
-    if request.method == 'POST':
-        brand = request.form.get('brand')
-        ptype = request.form.get('profit_type')
-        pvalue = float(request.form.get('profit_value'))
-        
-        # Use REPLACE to update or insert
-        c.execute("REPLACE INTO margins (brand, profit_type, profit_value) VALUES (%s,%s,%s)", 
-                  (brand, ptype, pvalue))
-        conn.commit()
-        conn.close()
-        return redirect(url_for('profit_margin'))
-        
-    c.execute("SELECT brand, profit_type, profit_value FROM margins")
-    margins = {row[0]: {'type': row[1], 'value': row[2]} for row in c.fetchall()}
-    
-    c.execute("SELECT DISTINCT brand, price FROM stock")
-    brands_with_price = c.fetchall()
-    brands = [row[0] for row in brands_with_price]
-    brand_prices = {row[0]: row[1] for row in brands_with_price}
-    conn.close()
-    
-    return render_template("profit_margin.html", margins=margins, brands=brands, brand_prices=brand_prices)
-
-# ---------------- SET ITEM PRICE (Admin Only) ----------------
-@app.route('/set_price', methods=['POST'])
-@login_required
-def set_price():
-    if session.get('role') != 'admin':
-        return "Access Denied", 403
-    brand = request.form.get('brand')
-    price = float(request.form.get('price', 0))
-    conn = connect()
-    c = conn.cursor()
-    c.execute("UPDATE stock SET price = %s WHERE brand = %s", (price, brand))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('profit_margin'))
+# Profit Margin and Price Setting routes removed/refactored
 
 # ---------------- PANEL SWITCH ----------------
 @app.route('/switch_panel')
@@ -205,6 +159,7 @@ def dashboard():
             'profit': b_profit,
             'left': b_left
         })
+
 
     today = datetime.now().strftime("%Y-%m-%d") 
     week_ago = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d") 
@@ -358,16 +313,12 @@ def add_sale():
         customer_village = request.form.get('customer_village', '')
         customer_phone = request.form.get('customer_phone', '')
         payment_method = request.form.get('payment_method', 'Cash')
-        c.execute("SELECT profit_type, profit_value FROM margins WHERE brand = %s", (brand,))
-        margin = c.fetchone()
-        ptype = margin[0] if margin else 'rupees'
-        pvalue = margin[1] if margin else 0.0
-        # Get latest purchase price for profit tracking
+        # Get latest purchase price for profit tracking (Strict Buy Price Logic)
         c.execute("SELECT purchase_price FROM loads WHERE brand = %s ORDER BY id DESC LIMIT 1", (brand,))
         lp = c.fetchone()
         pprice = lp[0] if lp else 0.0
         
-        c.execute("INSERT INTO sales (brand, quantity, price, date, customer_name, customer_village, customer_phone, payment_method, profit_type, profit_value, load_source, purchase_price) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (brand, qty, price, datetime.now().strftime("%Y-%m-%d"), customer_name, customer_village, customer_phone, payment_method, ptype, pvalue, "Current Stock", pprice)) 
+        c.execute("INSERT INTO sales (brand, quantity, price, date, customer_name, customer_village, customer_phone, payment_method, profit_type, profit_value, load_source, purchase_price) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (brand, qty, price, datetime.now().strftime("%Y-%m-%d"), customer_name, customer_village, customer_phone, payment_method, 'rupees', 0.0, "Current Stock", pprice)) 
         c.execute("UPDATE stock SET quantity = quantity - %s WHERE brand = %s", (qty, brand)) 
         
         # Notify Admin
@@ -472,7 +423,7 @@ def customers():
     sort_by = request.args.get('sort', 'date_desc')
     conn = connect()
     c = conn.cursor()
-    base_cols = "brand, quantity, date, customer_name, customer_village, payment_method, id, customer_phone, load_source, price"
+    base_cols = "brand, quantity, date, customer_name, customer_village, payment_method, id, customer_phone, load_source, price, purchase_price"
     conditions = []
     params = []
     if search:

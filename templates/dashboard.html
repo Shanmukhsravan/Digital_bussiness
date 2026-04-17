@@ -260,7 +260,6 @@
                             <td><span style="font-size: 1.1rem; font-weight: 600;">{{ s[1] }}</span></td>
                             <td style="color: var(--primary); font-weight: 700;">
                                 ₹{{ "{:,.0f}".format(s[2] or 0) }}
-                                <a href="/profit_margin" style="font-size: 0.75rem; opacity: 0.5; margin-left: 0.4rem;"><i class="fas fa-edit"></i></a>
                             </td>
                             <td>
                                 {% if s[1] < 50 %}
@@ -296,22 +295,6 @@
         </div>
 
         <div>
-            <div class="card" style="padding: 1.25rem;">
-                <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Profit Margins</h3>
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    {% for margin in margins %}
-                    <div style="padding: 1rem; border-radius: 12px; background: rgba(99, 102, 241, 0.03); border: 1px solid rgba(99, 102, 241, 0.1);">
-                        <div style="font-weight: 600; margin-bottom: 0.25rem;">{{ margin[0] }}</div>
-                        <div style="font-size: 0.85rem; color: var(--secondary); font-weight: 600;">
-                            {% if margin[1] == 'rupees' %}₹{{ margin[2] }} per bag{% else %}{{ margin[2] }}% margin{% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                    <a href="/profit_margin" class="btn btn-secondary" style="font-size: 0.85rem; justify-content: center;">
-                        <i class="fas fa-edit"></i> Edit Margins
-                    </a>
-                </div>
-            </div>
             <div class="card" style="padding: 1.25rem;">
                 <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
                     <i class="fas fa-truck-loading"></i> Loads History
