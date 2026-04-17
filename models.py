@@ -164,6 +164,25 @@ def init_db():
         c.execute("INSERT INTO users (username, password, role) VALUES (%s,%s,%s)", ("staff", staff_pass, "shopkeep"))
 
     conn.commit() 
+    
+    # --- Auto-Migration Logic ---
+    # Check for missing columns in existing tables
+    def add_column_if_missing(table, column, definition):
+        c.execute(f"SHOW COLUMNS FROM {table} LIKE %s", (column,))
+        if not c.fetchone():
+            print(f"Adding missing column '{column}' to table '{table}'...")
+            c.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
+            conn.commit()
+
+    # Sales table migrations
+    add_column_if_missing('sales', 'customer_phone', 'VARCHAR(50)')
+    add_column_if_missing('sales', 'purchase_price', 'FLOAT DEFAULT 0.0')
+    
+    # Loads table migrations
+    add_column_if_missing('loads', 'purchase_price', 'FLOAT DEFAULT 0.0')
+    add_column_if_missing('loads', 'settled', "VARCHAR(10) DEFAULT 'No'")
+    add_column_if_missing('loads', 'description', 'TEXT')
+
     conn.close()
 
 def reset_inventory():
