@@ -469,6 +469,8 @@ def edit_customer(sale_id):
         c_phone = request.form['customer_phone']
         pay_method = request.form['payment_method']
         l_source = request.form['load_source']
+        p_price = float(request.form.get('purchase_price', 0) or 0)
+        a_paid = float(request.form.get('amount_paid', 0) or 0)
         
         # Get old qty to adjust stock
         c.execute("SELECT brand, quantity FROM sales WHERE id = %s", (sale_id,))
@@ -482,9 +484,9 @@ def edit_customer(sale_id):
         c.execute("""UPDATE sales SET 
                   brand=%s, quantity=%s, price=%s, date=%s, 
                   customer_name=%s, customer_village=%s, customer_phone=%s, 
-                  payment_method=%s, load_source=%s 
+                  payment_method=%s, load_source=%s, purchase_price=%s, amount_paid=%s
                   WHERE id=%s""", 
-                  (brand, new_qty, price, date, c_name, c_village, c_phone, pay_method, l_source, sale_id))
+                  (brand, new_qty, price, date, c_name, c_village, c_phone, pay_method, l_source, p_price, a_paid, sale_id))
         
         conn.commit()
         conn.close()
