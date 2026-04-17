@@ -259,7 +259,7 @@ def dashboard():
         total_investment += row[0] * row[1]
 
     conn.close() 
-    return render_template("dashboard.html", stock=stock, sales=sales, total_revenue=total_revenue, total_profit=total_profit, daily=daily, daily_profit=daily_profit_val, daily_bags=daily_bags, weekly_bags=weekly_bags, monthly_bags=monthly_bags, total_bags_sold=total_bags_sold, total_bags_left=total_bags_left, total_bags_loaded=total_bags_loaded, total_waste=total_waste, total_investment=total_investment, loads=loads, waste_summary=waste_summary, recent_sales=recent_sales, weekly=weekly, monthly=monthly, low_stock=low_stock, margins=margins_data, monthly_breakdown=monthly_breakdown, panel_view=panel_view, today_date=today, jk_sold=jk_sold, nagarjuna_sold=nagarjuna_sold, brand_stats=brand_stats_detailed) 
+    return render_template("dashboard.html", stock=stock, sales=sales, total_revenue=total_revenue, total_profit=total_profit, daily=daily, daily_profit=daily_profit_val, daily_bags=daily_bags, weekly_bags=weekly_bags, monthly_bags=monthly_bags, total_bags_sold=total_bags_sold, total_bags_left=total_bags_left, total_bags_loaded=total_bags_loaded, total_waste=total_waste, total_investment=total_investment, loads=loads, waste_summary=waste_summary, recent_sales=recent_sales, weekly=weekly, monthly=monthly, low_stock=low_stock, monthly_breakdown=monthly_breakdown, panel_view=panel_view, today_date=today, jk_sold=jk_sold, nagarjuna_sold=nagarjuna_sold, brand_stats=brand_stats_detailed) 
 
 # ---------------- ADD STOCK ---------------- 
 @app.route('/add_stock', methods=['GET','POST']) 
