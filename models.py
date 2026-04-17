@@ -21,7 +21,8 @@ def connect():
             password=DB_PASSWORD,
             database=DB_NAME,
             port=port_int,
-            ssl_disabled=False if 'aiven' in DB_HOST.lower() else True # Auto-enable SSL for Aiven
+            ssl_disabled=False if 'aiven' in DB_HOST.lower() else True,
+            connection_timeout=10 # Prevent hanging on slow connections
         )
     except mysql.connector.Error as err:
         print(f"Error connecting to DB: {err}")
@@ -36,8 +37,13 @@ def connect():
         raise err
 
 def init_db(): 
-    conn = connect() 
-    c = conn.cursor() 
+    print(">>> Initializing database...")
+    try:
+        conn = connect() 
+        c = conn.cursor() 
+    except Exception as e:
+        print(f">>> FATAL ERROR during DB connection: {e}")
+        return
 
     # Users Table
     c.execute('''CREATE TABLE IF NOT EXISTS users (

@@ -11,7 +11,10 @@ from reportlab.lib.pagesizes import letter
 app = Flask(__name__) 
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key_rajanna')
 app.permanent_session_lifetime = timedelta(days=7)
-init_db() 
+try:
+    init_db() 
+except Exception as e:
+    print(f"CRITICAL: Failed to initialize DB on startup: {e}")
 
 # Helper to provide current app context
 @app.context_processor
