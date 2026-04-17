@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file
+import sys
+print(">>> APP LOADING AT TOP LEVEL...", flush=True)
 from datetime import datetime, timedelta 
 from models import init_db, connect 
 from werkzeug.security import check_password_hash
@@ -11,10 +13,17 @@ from reportlab.lib.pagesizes import letter
 app = Flask(__name__) 
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key_rajanna')
 app.permanent_session_lifetime = timedelta(days=7)
+
+@app.route('/health')
+def health_check():
+    return jsonify({"status": "ok"}), 200
+
 try:
+    print(">>> CALLING init_db()...", flush=True)
     init_db() 
+    print(">>> init_db() COMPLETED.", flush=True)
 except Exception as e:
-    print(f"CRITICAL: Failed to initialize DB on startup: {e}")
+    print(f">>> CRITICAL ERROR in init_db(): {e}", flush=True)
 
 # Helper to provide current app context
 @app.context_processor
