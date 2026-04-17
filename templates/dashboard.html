@@ -36,36 +36,50 @@
         </div>
     </div>
 
-    <!-- ============ TODAY'S HIGHLIGHT (TOP - Both Panels) ============ -->
-    <div class="today-highlight-bar">
+    <!-- ============ QUICK ACTIONS (Top Priority) ============ -->
+    <div class="quick-actions-bar">
+        <a href="/add_sale" class="action-card" style="border-bottom: 4px solid var(--primary);">
+            <div class="action-icon" style="background: rgba(99,102,241,0.1); color: var(--primary);">
+                <i class="fas fa-cart-plus"></i>
+            </div>
+            <div class="action-label">Record Sale</div>
+            <div class="action-sub">New Customer Sale</div>
+        </a>
+        <a href="/pending_customers" class="action-card" style="border-bottom: 4px solid var(--warning);">
+            <div class="action-icon" style="background: rgba(245,158,11,0.1); color: var(--warning);">
+                <i class="fas fa-hand-holding-dollar"></i>
+            </div>
+            <div class="action-label">Pending</div>
+            <div class="action-sub">Collect Payments</div>
+        </a>
+        <a href="/add_stock" class="action-card" style="border-bottom: 4px solid var(--secondary);">
+            <div class="action-icon" style="background: rgba(16,185,129,0.1); color: var(--secondary);">
+                <i class="fas fa-plus-circle"></i>
+            </div>
+            <div class="action-label">Add Stock</div>
+            <div class="action-sub">New Load Arrival</div>
+        </a>
+    </div>
+
+    <!-- Today's Highlights (Condensed) -->
+    <div class="today-highlight-bar" style="margin-top: -0.5rem; margin-bottom: 2rem; padding: 0.75rem 1.5rem;">
         <div class="today-item">
-            <div class="today-icon" style="background: rgba(245,158,11,0.15); color: var(--warning);">
-                <i class="fas fa-box"></i>
-            </div>
-            <div>
-                <span class="today-label">Today Sold</span>
-                <span class="today-value">{{ daily_bags }} Bags</span>
-            </div>
+            <span class="today-label">Bags Sold Today:</span>
+            <span class="today-value" style="font-size: 1.1rem; margin-left: 0.4rem;">{{ daily_bags }} <span style="font-size: 0.75rem; opacity: 0.5;">Bags</span></span>
         </div>
         <div class="today-divider"></div>
         <div class="today-item">
-            <div class="today-icon" style="background: rgba(99,102,241,0.15); color: var(--primary);">
-                <i class="fas fa-coins"></i>
-            </div>
-            <div>
-                <span class="today-label">Today Revenue</span>
-                <span class="today-value">₹{{ "{:,.0f}".format(daily) }}</span>
-            </div>
+            <span class="today-label">Today Revenue:</span>
+            <span class="today-value" style="font-size: 1.1rem; margin-left: 0.4rem;">₹{{ "{:,.0f}".format(daily) }}</span>
         </div>
         <div class="today-divider"></div>
         <div class="today-item">
-            <div class="today-icon" style="background: rgba(16,185,129,0.15); color: var(--secondary);">
-                <i class="fas fa-chart-line"></i>
-            </div>
-            <div>
-                <span class="today-label">Today Profit</span>
-                <span class="today-value" style="color: var(--secondary);">₹{{ "{:,.0f}".format(daily_profit) }}</span>
-            </div>
+            <span class="today-label">Today Profit:</span>
+            <span class="today-value" style="font-size: 1.1rem; margin-left: 0.4rem; color: var(--secondary);">₹{{ "{:,.0f}".format(daily_profit) }}</span>
+            <span class="tooltip-trigger">
+                <i class="fas fa-info-circle" style="font-size: 0.8rem;"></i>
+                <div class="tooltip-content">Profit = (Sale Price - Buy Price) × Bags</div>
+            </span>
         </div>
     </div>
 
@@ -74,6 +88,10 @@
 
     <!-- Business Overview Stats -->
     <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="card stat-card" style="border-left: 4px solid var(--warning);">
+            <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Stock Remaining</span>
+            <div class="stat-value" style="color: var(--warning);">{{ total_bags_left }} <span style="font-size: 0.9rem; opacity: 0.7;">Bags</span></div>
+        </div>
         <div class="card stat-card" style="border-left: 4px solid var(--primary);">
             <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Total Bags Loaded</span>
             <div class="stat-value" style="color: var(--primary);">{{ total_bags_loaded }} <span style="font-size: 0.9rem; opacity: 0.7;">Bags</span></div>
@@ -82,28 +100,45 @@
             <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Total Bags Sold</span>
             <div class="stat-value" style="color: var(--secondary);">{{ total_bags_sold }} <span style="font-size: 0.9rem; opacity: 0.7;">Bags</span></div>
         </div>
-        <div class="card stat-card" style="border-left: 4px solid var(--warning);">
-            <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Stock Remaining</span>
-            <div class="stat-value" style="color: var(--warning);">{{ total_bags_left }} <span style="font-size: 0.9rem; opacity: 0.7;">Bags</span></div>
-        </div>
         <div class="card stat-card" style="border-left: 4px solid var(--danger);">
             <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Bags Wasted</span>
             <div class="stat-value" style="color: var(--danger);">{{ total_waste }} <span style="font-size: 0.9rem; opacity: 0.7;">Bags</span></div>
         </div>
     </div>
 
-    <!-- Brand-Wise Sales Breakdown -->
-    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
-        {% for s in sales %}
-        <div class="card stat-card" style="border-left: 4px solid {% if s[0] == 'JK Super' %}var(--primary){% else %}var(--accent){% endif %}; padding: 1.25rem;">
-            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
-                <span class="brand-tag" style="{% if s[0] == 'Nagarjuna' %}background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.08)); color: var(--accent);{% endif %}">{{ s[0] }}</span>
-                <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Sold</span>
+    <!-- Brand-Wise Performance Breakdown -->
+    <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+        {% for bs in brand_stats %}
+        <div class="card stat-card" style="border-left: 4px solid {% if bs.brand == 'JK Super' %}var(--primary){% else %}var(--accent){% endif %}; padding: 1.5rem; position: relative;">
+            <div style="position: absolute; top: 1rem; right: 1rem;">
+                <span class="badge {% if bs.left < 50 %}badge-danger{% elif bs.left < 100 %}badge-warning{% else %}badge-success{% endif %}" style="{% if bs.left < 100 and bs.left >= 50 %}background: rgba(245,158,11,0.1); color: var(--warning);{% endif %}">
+                    {{ bs.left }} Stock Left
+                </span>
             </div>
-            <div class="stat-value" style="color: {% if s[0] == 'JK Super' %}var(--primary){% else %}var(--accent){% endif %}; font-size: 1.8rem;">
-                {{ s[1]|int }} <span style="font-size: 0.9rem; opacity: 0.7;">Bags</span>
+            <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1rem;">
+                <span class="brand-tag" style="padding: 0.3rem 0.75rem; font-size: 0.8rem; {% if bs.brand == 'Nagarjuna' %}background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.08)); color: var(--accent);{% endif %}">{{ bs.brand }}</span>
+                <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Overview</span>
             </div>
-            <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Revenue: ₹{{ "{:,.0f}".format(s[2] or 0) }}</span>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">Total Sold</div>
+                    <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-light);">{{ bs.sold }} <span style="font-size: 0.8rem; opacity: 0.6;">Bags</span></div>
+                </div>
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">
+                        Profit 
+                        <span class="tooltip-trigger">
+                            <i class="fas fa-info-circle"></i>
+                            <div class="tooltip-content" style="left: auto; right: 0; transform: none;">Profit = (Sale - Buy) * Qty</div>
+                        </span>
+                    </div>
+                    <div style="font-size: 1.5rem; font-weight: 800; color: var(--secondary);">₹{{ "{:,.0f}".format(bs.profit) }}</div>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid rgba(0,0,0,0.03); font-size: 0.85rem; color: var(--text-muted);">
+                Revenue: <strong>₹{{ "{:,.0f}".format(bs.revenue) }}</strong>
+            </div>
         </div>
         {% endfor %}
     </div>
@@ -188,6 +223,10 @@
                         </div>
                         <div class="detail-item">
                             Profit: <strong style="color: var(--secondary);">₹{{ "{:,.0f}".format(mb.profit) }}</strong>
+                            <span class="tooltip-trigger">
+                                <i class="fas fa-info-circle" style="font-size: 0.75rem;"></i>
+                                <div class="tooltip-content" style="left: auto; right: 0; transform: none;">(Sale Price - Buy Price) × Bags</div>
+                            </span>
                         </div>
                         {% if mb.waste > 0 %}
                         <div class="detail-item" style="color: var(--danger);">

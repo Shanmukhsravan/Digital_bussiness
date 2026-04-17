@@ -177,8 +177,35 @@ def dashboard():
         else:
             total_profit += 40 * qty
     
-    c.execute("SELECT brand, profit_type, profit_value FROM margins")
-    margins_data = c.fetchall()
+    # Detailed Brand Stats for Dashboard
+    c.execute("SELECT brand FROM stock")
+    all_brands = [r[0] for r in c.fetchall()]
+    brand_stats_detailed = []
+    for b in all_brands:
+        c.execute("SELECT SUM(quantity), SUM(quantity*price) FROM sales WHERE brand = %s", (b,))
+        s_data = c.fetchone()
+        b_sold = int(s_data[0] or 0)
+        b_rev = float(s_data[1] or 0)
+        
+        c.execute("SELECT quantity, price, purchase_price FROM sales WHERE brand = %s", (b,))
+        b_records = c.fetchall()
+        b_profit = 0
+        for r in b_records:
+            q, sp, pp = r
+            if pp > 0: b_profit += (sp - pp) * q
+            else: b_profit += 40 * q
+            
+        c.execute("SELECT quantity FROM stock WHERE brand = %s", (b,))
+        b_left = int(c.fetchone()[0] or 0)
+        
+        brand_stats_detailed.append({
+            'brand': b,
+            'sold': b_sold,
+            'revenue': b_rev,
+            'profit': b_profit,
+            'left': b_left
+        })
+
     today = datetime.now().strftime("%Y-%m-%d") 
     week_ago = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d") 
     month_ago = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d") 
@@ -277,7 +304,7 @@ def dashboard():
         total_investment += row[0] * row[1]
 
     conn.close() 
-    return render_template("dashboard.html", stock=stock, sales=sales, total_revenue=total_revenue, total_profit=total_profit, daily=daily, daily_profit=daily_profit_val, daily_bags=daily_bags, weekly_bags=weekly_bags, monthly_bags=monthly_bags, total_bags_sold=total_bags_sold, total_bags_left=total_bags_left, total_bags_loaded=total_bags_loaded, total_waste=total_waste, total_investment=total_investment, loads=loads, waste_summary=waste_summary, recent_sales=recent_sales, weekly=weekly, monthly=monthly, low_stock=low_stock, margins=margins_data, monthly_breakdown=monthly_breakdown, panel_view=panel_view, today_date=today, jk_sold=jk_sold, nagarjuna_sold=nagarjuna_sold) 
+    return render_template("dashboard.html", stock=stock, sales=sales, total_revenue=total_revenue, total_profit=total_profit, daily=daily, daily_profit=daily_profit_val, daily_bags=daily_bags, weekly_bags=weekly_bags, monthly_bags=monthly_bags, total_bags_sold=total_bags_sold, total_bags_left=total_bags_left, total_bags_loaded=total_bags_loaded, total_waste=total_waste, total_investment=total_investment, loads=loads, waste_summary=waste_summary, recent_sales=recent_sales, weekly=weekly, monthly=monthly, low_stock=low_stock, margins=margins_data, monthly_breakdown=monthly_breakdown, panel_view=panel_view, today_date=today, jk_sold=jk_sold, nagarjuna_sold=nagarjuna_sold, brand_stats=brand_stats_detailed) 
 
 # ---------------- ADD STOCK ---------------- 
 @app.route('/add_stock', methods=['GET','POST']) 
