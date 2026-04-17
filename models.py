@@ -183,6 +183,7 @@ def init_db():
     # Sales table migrations
     add_column_if_missing('sales', 'customer_phone', 'VARCHAR(50)')
     add_column_if_missing('sales', 'purchase_price', 'FLOAT DEFAULT 0.0')
+    add_column_if_missing('sales', 'amount_paid', 'FLOAT DEFAULT 0.0')
     
     # Loads table migrations
     add_column_if_missing('loads', 'purchase_price', 'FLOAT DEFAULT 0.0')

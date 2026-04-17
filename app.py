@@ -313,12 +313,13 @@ def add_sale():
         customer_village = request.form.get('customer_village', '')
         customer_phone = request.form.get('customer_phone', '')
         payment_method = request.form.get('payment_method', 'Cash')
+        amount_paid = float(request.form.get('amount_paid', 0) or 0)
         # Get latest purchase price for profit tracking (Strict Buy Price Logic)
         c.execute("SELECT purchase_price FROM loads WHERE brand = %s ORDER BY id DESC LIMIT 1", (brand,))
         lp = c.fetchone()
         pprice = lp[0] if lp else 0.0
         
-        c.execute("INSERT INTO sales (brand, quantity, price, date, customer_name, customer_village, customer_phone, payment_method, profit_type, profit_value, load_source, purchase_price) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (brand, qty, price, datetime.now().strftime("%Y-%m-%d"), customer_name, customer_village, customer_phone, payment_method, 'rupees', 0.0, "Current Stock", pprice)) 
+        c.execute("INSERT INTO sales (brand, quantity, price, date, customer_name, customer_village, customer_phone, payment_method, profit_type, profit_value, load_source, purchase_price, amount_paid) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (brand, qty, price, datetime.now().strftime("%Y-%m-%d"), customer_name, customer_village, customer_phone, payment_method, 'rupees', 0.0, "Current Stock", pprice, amount_paid)) 
         c.execute("UPDATE stock SET quantity = quantity - %s WHERE brand = %s", (qty, brand)) 
         
         # Notify Admin
@@ -423,7 +424,7 @@ def customers():
     sort_by = request.args.get('sort', 'date_desc')
     conn = connect()
     c = conn.cursor()
-    base_cols = "brand, quantity, date, customer_name, customer_village, payment_method, id, customer_phone, load_source, price, purchase_price"
+    base_cols = "brand, quantity, date, customer_name, customer_village, payment_method, id, customer_phone, load_source, price, purchase_price, amount_paid"
     conditions = []
     params = []
     if search:

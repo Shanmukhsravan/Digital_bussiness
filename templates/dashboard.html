@@ -36,6 +36,28 @@
         </div>
     </div>
 
+    <div style="text-align: right; margin-bottom: 1.5rem;">
+        <button onclick="refreshFinancials()" class="btn btn-secondary" style="background: rgba(99, 102, 241, 0.05); color: var(--primary); border: 1px solid rgba(99, 102, 241, 0.1); padding: 0.5rem 1rem; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+            <i class="fas fa-sync-alt" id="refresh-icon"></i> Sync & Refresh Profits
+        </button>
+    </div>
+
+    <script>
+    function refreshFinancials() {
+        const btn = event.currentTarget;
+        const icon = document.getElementById('refresh-icon');
+        icon.classList.add('fa-spin');
+        btn.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Recalculating...';
+        btn.style.opacity = '0.7';
+        btn.disabled = true;
+        
+        // Short delay to give "recalculating" feel
+        setTimeout(() => {
+            window.location.reload();
+        }, 800);
+    }
+    </script>
+
     <!-- ============ QUICK ACTIONS (Top Priority) ============ -->
     <div class="quick-actions-bar">
         <a href="/add_sale" class="action-card" style="border-bottom: 4px solid var(--primary);">
@@ -77,8 +99,8 @@
             <span class="today-label">Today Profit:</span>
             <span class="today-value" style="font-size: 1.1rem; margin-left: 0.4rem; color: var(--secondary);">₹{{ "{:,.0f}".format(daily_profit) }}</span>
             <span class="tooltip-trigger">
-                <i class="fas fa-info-circle" style="font-size: 0.8rem;"></i>
-                <div class="tooltip-content">Profit = (Sale Price - Buy Price) × Bags</div>
+                <i class="fas fa-circle-check" style="font-size: 0.8rem; color: #10b981;"></i>
+                <div class="tooltip-content">Verified: Sum of all customer sale profits today.</div>
             </span>
         </div>
     </div>

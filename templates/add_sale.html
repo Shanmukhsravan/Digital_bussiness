@@ -39,6 +39,16 @@
                 </div>
             </div>
 
+            <div class="form-group" style="background: rgba(99, 102, 241, 0.05); padding: 1.25rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-weight: 600; color: var(--text-muted);">Total Bill Amount:</span>
+                    <span id="total_display" style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">₹0.00</span>
+                </div>
+                <label>Amount Received Now (₹)</label>
+                <input name="amount_paid" id="amount_paid" type="number" step="0.01" class="form-control" placeholder="How much did they pay?">
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Leave empty if fully paid or fully credit.</div>
+            </div>
+
             <div class="form-group">
                 <label>Payment Method</label>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 0.5rem;">
@@ -75,12 +85,20 @@
 </div>
 
 <script>
-    function calculate() {
-        const qty = document.getElementById('qty').value || 0;
-        const price = document.getElementById('price').value || 0;
-        const total = qty * price;
-        document.getElementById('total').innerText = '₹' + total.toLocaleString('en-IN');
+function calculate() {
+    const qty = document.getElementById('qty').value;
+    const price = document.getElementById('price').value;
+    const total = qty * price;
+    document.getElementById('total_display').innerText = '₹' + total.toLocaleString('en-IN', {minimumFractionDigits: 2});
+    document.getElementById('total').innerText = '₹' + total.toLocaleString('en-IN');
+    
+    // Auto-fill amount_paid if it's currently 0 or empty (hint for staff)
+    const paidInput = document.getElementById('amount_paid');
+    if (!paidInput.value || paidInput.value == 0) {
+        // We don't force it, but maybe update placeholder
+        paidInput.placeholder = "Bill is ₹" + total.toFixed(2);
     }
+}
 </script>
 
 {% endblock %}
