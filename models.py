@@ -175,4 +175,4 @@ def reset_inventory():
 
     conn.commit()
     conn.close()
-    print("Database wiped and inventory reset successfully.")
+    print("Database wiped and inventory reset successfully.")

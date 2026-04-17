@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+    <link rel="manifest" href="/static/manifest.json">
     <title>Digital_Business | Smart Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <!-- Load Font Awesome for icons -->
@@ -64,14 +69,22 @@
             btn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         }
 
-        // Initialize theme
+        // Initialize theme and PWA
         window.onload = function() {
+            // Theme setup
             const savedTheme = localStorage.getItem('theme');
             const body = document.body;
             const btn = document.getElementById('theme-toggle');
             if (savedTheme === 'dark') {
                 body.classList.add('dark');
                 btn.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+
+            // Register Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/static/sw.js')
+                .then(() => console.log('Service Worker Registered'))
+                .catch(err => console.log('Service Worker Failed', err));
             }
         };
     </script>
