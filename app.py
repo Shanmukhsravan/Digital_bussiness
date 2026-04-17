@@ -293,6 +293,11 @@ def add_sale():
         pvalue = margin[1] if margin else 0.0
         c.execute("INSERT INTO sales (brand, quantity, price, date, customer_name, customer_village, customer_phone, payment_method, profit_type, profit_value, load_source) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (brand, qty, price, datetime.now().strftime("%Y-%m-%d"), customer_name, customer_village, customer_phone, payment_method, ptype, pvalue, "Current Stock")) 
         c.execute("UPDATE stock SET quantity = quantity - %s WHERE brand = %s", (qty, brand)) 
+        
+        # Notify Admin
+        c.execute("INSERT INTO app_alerts (message, recipient_role, type) VALUES (%s, %s, %s)", 
+                  (f"Staff recorded a sale of {qty} bags of {brand} to {customer_name or 'Guest'}", "admin", "sale"))
+        
         conn.commit() 
         conn.close() 
         return redirect('/') 
@@ -300,6 +305,88 @@ def add_sale():
     brands = [row[0] for row in c.fetchall()]
     conn.close()
     return render_template("add_sale.html", brands=brands) 
+
+# ---------------- UNDO SALE ----------------
+@app.route('/undo_sale/<int:sale_id>')
+@login_required
+def undo_sale(sale_id):
+    if session.get('role') != 'admin':
+        return "Access Denied", 403
+    
+    conn = connect()
+    c = conn.cursor()
+    
+    # 1. Get sale details
+    c.execute("SELECT brand, quantity FROM sales WHERE id = %s", (sale_id,))
+    sale = c.fetchone()
+    
+    if sale:
+        brand, qty = sale
+        # 2. Restore stock
+        c.execute("UPDATE stock SET quantity = quantity + %s WHERE brand = %s", (qty, brand))
+        # 3. Delete sale
+        c.execute("DELETE FROM sales WHERE id = %s", (sale_id,))
+        conn.commit()
+    
+    conn.close()
+    return redirect(url_for('customers'))
+
+@app.route('/undo_last_sale')
+@login_required
+def undo_last_sale():
+    if session.get('role') != 'admin':
+        return "Access Denied", 403
+    
+    conn = connect()
+    c = conn.cursor()
+    c.execute("SELECT id FROM sales ORDER BY id DESC LIMIT 1")
+    last_sale = c.fetchone()
+    conn.close()
+    
+    if last_sale:
+        return redirect(url_for('undo_sale', sale_id=last_sale[0]))
+    return redirect(url_for('dashboard'))
+# ---------------- NOTIFICATION SYSTEM ----------------
+@app.route('/api/notifications')
+@login_required
+def get_notifications():
+    role = session.get('role')
+    conn = connect()
+    c = conn.cursor()
+    c.execute("SELECT id, message, type, created_at FROM app_alerts WHERE recipient_role = %s AND is_read = FALSE ORDER BY created_at DESC", (role,))
+    alerts = [{'id': r[0], 'message': r[1], 'type': r[2], 'time': r[3].strftime("%H:%M")} for r in c.fetchall()]
+    conn.close()
+    return jsonify(alerts)
+
+@app.route('/api/notifications/read', methods=['POST'])
+@login_required
+def mark_notifications_read():
+    role = session.get('role')
+    conn = connect()
+    c = conn.cursor()
+    c.execute("UPDATE app_alerts SET is_read = TRUE WHERE recipient_role = %s", (role,))
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'success'})
+
+@app.route('/send_admin_alert', methods=['GET', 'POST'])
+@login_required
+def send_admin_alert():
+    if session.get('role') != 'admin':
+        return "Access Denied", 403
+    
+    if request.method == 'POST':
+        message = request.form.get('message')
+        conn = connect()
+        c = conn.cursor()
+        c.execute("INSERT INTO app_alerts (message, recipient_role, type) VALUES (%s, %s, %s)", 
+                  (message, "shopkeep", "alert"))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('dashboard'))
+    
+    return render_template("send_alert.html")
+
 
 # ---------------- CUSTOMER LEDGER ----------------
 @app.route('/customers')
@@ -500,6 +587,13 @@ def kirana_add_sale():
         qty = int(request.form.get("quantity", 0))
         c.execute("INSERT INTO kirana_sales (product_id, quantity, date_time) VALUES (%s, %s, %s)", (p_id, qty, datetime.now()))
         c.execute("UPDATE kirana_products SET stock = stock - %s WHERE id = %s", (qty, p_id))
+        
+        # Notify Admin
+        c.execute("SELECT name FROM kirana_products WHERE id = %s", (p_id,))
+        p_name = c.fetchone()[0]
+        c.execute("INSERT INTO app_alerts (message, recipient_role, type) VALUES (%s, %s, %s)", 
+                  (f"Staff sold {qty} units of {p_name} in Kirana shop", "admin", "sale"))
+        
         conn.commit()
         conn.close()
         return redirect(url_for('kirana_add_sale'))

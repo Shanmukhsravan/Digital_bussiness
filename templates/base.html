@@ -15,6 +15,13 @@
 </head>
 <body class="animate-fade app-{{ 'kirana' if current_app_name == 'Smart Kirana' else 'cement' }}">
 
+    <div id="admin-alert-banner">
+        <span id="banner-text"></span>
+        <div class="banner-close" onclick="closeBanner()">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="logo" style="font-weight: 800; font-size: 1.5rem; color: var(--primary);">
             {% if current_app_name == 'Smart Kirana' %}
@@ -44,10 +51,29 @@
                     <a href="/customers"><i class="fas fa-users"></i> Ledger</a>
                     {% if session['role'] == 'admin' %}
                         <a href="/profit_margin"><i class="fas fa-percent"></i> Margins</a>
+                        <a href="/send_admin_alert" title="Send Alert to Staff"><i class="fas fa-bullhorn"></i></a>
                     {% endif %}
                 {% endif %}
+                
+                <div class="notification-bell" id="bell-btn" onclick="toggleTray()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notif-badge" style="display: none;">0</span>
+                    
+                    <div id="notification-tray">
+                        <div class="tray-header">
+                            <span>Notifications</span>
+                            <span onclick="markRead()" style="color: var(--primary); cursor: pointer; font-size: 0.75rem;">Mark all as read</span>
+                        </div>
+                        <div class="tray-content" id="tray-items">
+                            <div style="padding: 2rem; text-align: center; color: var(--text-muted); opacity: 0.5;">
+                                No new notifications
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <a href="/logout" style="color: var(--danger);"><i class="fas fa-sign-out-alt"></i></a>
-            {% endif %}
+{% endif %}
             <button id="theme-toggle" onclick="toggleTheme()">
                 <i class="fas fa-moon"></i>
             </button>
@@ -86,7 +112,74 @@
                 .then(() => console.log('Service Worker Registered'))
                 .catch(err => console.log('Service Worker Failed', err));
             }
+
+            // Start Notification Polling
+            if ("{{ session['user_id'] }}") {
+                checkNotifications();
+                setInterval(checkNotifications, 15000);
+            }
         };
+
+        function toggleTray() {
+            const tray = document.getElementById('notification-tray');
+            tray.style.display = tray.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function closeBanner() {
+            document.getElementById('admin-alert-banner').classList.remove('show');
+        }
+
+        let lastNotificationId = 0;
+
+        async function checkNotifications() {
+            try {
+                const response = await fetch('/api/notifications');
+                const data = await response.json();
+                
+                const badge = document.getElementById('notif-badge');
+                const tray = document.getElementById('tray-items');
+                
+                if (data.length > 0) {
+                    badge.innerText = data.length;
+                    badge.style.display = 'flex';
+                    
+                    tray.innerHTML = '';
+                    data.forEach(n => {
+                        tray.innerHTML += `
+                            <div class="notification-item">
+                                <div style="font-weight: 600;">${n.type === 'alert' ? '📢 Admin Alert' : '💰 New Sale'}</div>
+                                <div>${n.message}</div>
+                                <div class="time">${n.time}</div>
+                            </div>
+                        `;
+                        
+                        // Handle Alert Banner for staff
+                        if (n.type === 'alert' && n.id > lastNotificationId) {
+                            showBanner(n.message);
+                            lastNotificationId = n.id;
+                        }
+                    });
+                } else {
+                    badge.style.display = 'none';
+                    tray.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted); opacity: 0.5;">No new notifications</div>';
+                }
+            } catch (err) { console.error('Error fetching notifications:', err); }
+        }
+
+        function showBanner(msg) {
+            const banner = document.getElementById('admin-alert-banner');
+            document.getElementById('banner-text').innerText = msg;
+            banner.classList.add('show');
+            
+            // Auto hide after 10 seconds
+            setTimeout(closeBanner, 10000);
+        }
+
+        async function markRead() {
+            await fetch('/api/notifications/read', { method: 'POST' });
+            checkNotifications();
+            toggleTray();
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="animate-fade" style="max-width: 600px; margin: 0 auto;">
+    <div class="card" style="background: linear-gradient(135deg, #4f46e5, #3730a3); color: white; border: none; margin-bottom: 2rem;">
+        <h1><i class="fas fa-bullhorn"></i> Broadcast Alert</h1>
+        <p>Send a message to all staff panels. It will appear as a sliding banner.</p>
+    </div>
+
+    <div class="card">
+        <form action="/send_admin_alert" method="post">
+            <div class="form-group">
+                <label for="message" style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Message Content</label>
+                <textarea name="message" id="message" class="form-control" rows="4" placeholder="Type your message here..." required style="resize: none;"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;">
+                    <i class="fas fa-paper-plane"></i> Send to Staff
+                </button>
+                <a href="/" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="card" style="margin-top: 2rem; border-left: 4px solid var(--accent); background: rgba(var(--accent-rgb), 0.05);">
+        <h3><i class="fas fa-info-circle"></i> Preview</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">This message will slide down from the top of the screen for all logged-in staff members within 15 seconds.</p>
+    </div>
+</div>
+
+{% endblock %}

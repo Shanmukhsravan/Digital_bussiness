@@ -135,11 +135,14 @@
 
     <!-- Quick Actions -->
     <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-        <a href="/add_sale" class="btn btn-primary" style="flex: 1; justify-content: center; padding: 1.25rem;">
+        <a href="/add_sale" class="btn btn-primary" style="flex: 2; justify-content: center; padding: 1.25rem;">
             <i class="fas fa-cart-plus"></i> Record New Sale
         </a>
+        <a href="/undo_last_sale" class="btn btn-secondary" style="flex: 1; justify-content: center; padding: 1.25rem; background: rgba(239, 68, 68, 0.1); color: var(--danger);" onclick="return confirm('Are you sure you want to undo the VERY LAST transaction?')">
+            <i class="fas fa-rotate-left"></i> Undo Last Sale
+        </a>
         <a href="/add_stock" class="btn btn-secondary" style="flex: 1; justify-content: center; padding: 1.25rem; background: rgba(16, 185, 129, 0.1); color: var(--secondary);">
-            <i class="fas fa-plus-circle"></i> Add New Stock
+            <i class="fas fa-plus-circle"></i> Add Stock
         </a>
     </div>
 

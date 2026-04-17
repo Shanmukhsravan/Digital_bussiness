@@ -779,3 +779,127 @@ body.dark.app-kirana .card {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
+
+/* Notifications UI */
+.notification-bell {
+    position: relative;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: var(--text-muted);
+}
+
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--danger);
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 5px;
+    border-radius: 10px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 2px var(--card-light);
+}
+
+body.dark .notification-badge {
+    box-shadow: 0 0 0 2px var(--card-dark);
+}
+
+#notification-tray {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 320px;
+    background: var(--card-light);
+    border-radius: 16px;
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 1001;
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-top: 1rem;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease-out;
+}
+
+body.dark #notification-tray {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4);
+}
+
+.tray-header {
+    padding: 1rem;
+    background: rgba(99, 102, 241, 0.05);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.tray-content {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.03);
+    font-size: 0.88rem;
+    transition: var(--transition);
+}
+
+.notification-item:hover {
+    background: rgba(99, 102, 241, 0.02);
+}
+
+.notification-item .time {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.4rem;
+}
+
+/* Admin Alert Banner */
+#admin-alert-banner {
+    position: fixed;
+    top: -120px;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(135deg, #f59e0b, #ea580c);
+    color: white;
+    padding: 1.25rem 3rem;
+    text-align: center;
+    font-weight: 700;
+    z-index: 10000;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.3);
+    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+#admin-alert-banner.show {
+    transform: translateY(120px);
+}
+
+.banner-close {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    background: rgba(255,255,255,0.2);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.banner-close:hover {
+    background: rgba(255,255,255,0.4);
+}

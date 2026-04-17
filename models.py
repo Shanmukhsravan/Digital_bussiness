@@ -139,6 +139,18 @@ def init_db():
         )
     """)
 
+    # Unified Notifications/Alerts Table
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS app_alerts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            message TEXT,
+            recipient_role VARCHAR(50),
+            type VARCHAR(50),
+            is_read BOOLEAN DEFAULT FALSE,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     # Initial Users
     c.execute("SELECT COUNT(*) FROM users")
     if c.fetchone()[0] == 0:

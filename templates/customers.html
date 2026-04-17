@@ -190,9 +190,14 @@
                         </td>
                         {% if session['role'] == 'admin' %}
                         <td>
-                            <a href="/edit_customer/{{ c[6] }}" class="btn btn-secondary" style="padding: 0.4rem 0.75rem; font-size: 0.85rem;">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <a href="/edit_customer/{{ c[6] }}" class="btn btn-secondary" style="padding: 0.4rem 0.75rem; font-size: 0.85rem;">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="/undo_sale/{{ c[6] }}" class="btn btn-secondary" style="padding: 0.4rem 0.75rem; font-size: 0.85rem; background: rgba(239, 68, 68, 0.1); color: var(--danger);" onclick="return confirm('Are you sure you want to UNDO this transaction? This will delete the record and return bags to stock.')">
+                                    <i class="fas fa-rotate-left"></i> Undo
+                                </a>
+                            </div>
                         </td>
                         {% endif %}
                     </tr>
