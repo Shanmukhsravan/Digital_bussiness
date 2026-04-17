@@ -48,7 +48,8 @@
                     <a href="{{ url_for('kirana_report') }}"><i class="fas fa-file-invoice"></i> Report</a>
                 {% else %}
                     <a href="/"><i class="fas fa-chart-line"></i> Dashboard</a>
-                    <a href="/customers"><i class="fas fa-users"></i> Ledger</a>
+                    <a href="/pending_customers"><i class="fas fa-hand-holding-dollar"></i> Pending</a>
+                    <a href="/customers"><i class="fas fa-users-viewfinder"></i> Customers</a>
                     {% if session['role'] == 'admin' %}
                         <a href="/profit_margin"><i class="fas fa-percent"></i> Margins</a>
                         <a href="/send_admin_alert" title="Send Alert to Staff"><i class="fas fa-bullhorn"></i></a>

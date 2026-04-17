@@ -903,3 +903,85 @@ body.dark #notification-tray {
 .banner-close:hover {
     background: rgba(255,255,255,0.4);
 }
+/* Load Hover Card */
+.load-info-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.load-hover-card {
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    background: var(--card-light);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: none;
+    font-size: 0.82rem;
+    color: var(--text-light);
+    text-align: left;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+body.dark .load-hover-card {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.load-info-wrapper:hover .load-hover-card {
+    display: block;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Glass Counter UI */
+.glass-counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.counter-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.counter-btn:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.1);
+}
+
+.counter-btn:active {
+    transform: scale(0.95);
+}
+
+.counter-value {
+    font-size: 3rem;
+    font-weight: 800;
+    min-width: 80px;
+    text-align: center;
+    color: var(--text-light);
+}
+
+body.dark .counter-value {
+    color: var(--text-dark);
+}

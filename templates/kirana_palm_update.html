@@ -15,16 +15,41 @@
 
             <form method="post">
                 <div class="mb-4">
-                    <label class="form-label d-block text-center">New Glasses Sold</label>
-                    <input type="number" name="glasses_sold" class="form-control form-control-lg text-center" 
-                           placeholder="0" required min="1">
-                    <div class="form-text text-center mt-2">This will be added to the daily total.</div>
+                    <label class="form-label d-block text-center">Glasses Sold</label>
+                    <div class="glass-counter">
+                        <button type="button" class="counter-btn" onclick="decrement()">-</button>
+                        <div class="counter-value" id="display">1</div>
+                        <button type="button" class="counter-btn" onclick="increment()">+</button>
+                    </div>
+                    <input type="hidden" name="glasses_sold" id="glasses_input" value="1">
+                    <div class="form-text text-center mt-2">Tap + or - to set the count, then add record.</div>
                 </div>
                 
                 <button type="submit" class="btn btn-success w-100 py-3">
                     <i class="fas fa-plus me-2"></i> Add Record
                 </button>
             </form>
+
+            <script>
+                function increment() {
+                    const display = document.getElementById('display');
+                    const input = document.getElementById('glasses_input');
+                    let val = parseInt(display.innerText);
+                    val++;
+                    display.innerText = val;
+                    input.value = val;
+                }
+                function decrement() {
+                    const display = document.getElementById('display');
+                    const input = document.getElementById('glasses_input');
+                    let val = parseInt(display.innerText);
+                    if (val > 1) {
+                        val--;
+                        display.innerText = val;
+                        input.value = val;
+                    }
+                }
+            </script>
             
             <a href="{{ url_for('kirana_add_sale') }}" class="btn btn-outline-secondary w-100 mt-3">Back to Sale Entry</a>
         </div>

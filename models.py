@@ -68,7 +68,8 @@ def init_db():
         payment_method VARCHAR(50),
         profit_type VARCHAR(50),
         profit_value FLOAT,
-        load_source VARCHAR(255)
+        load_source VARCHAR(255),
+        purchase_price FLOAT DEFAULT 0.0
     )''') 
 
     # Margins Table (Settings for profit)
@@ -84,7 +85,10 @@ def init_db():
         brand VARCHAR(255),
         quantity INT,
         date VARCHAR(255),
-        load_name VARCHAR(255)
+        load_name VARCHAR(255),
+        purchase_price FLOAT DEFAULT 0.0,
+        settled VARCHAR(10) DEFAULT 'No',
+        description TEXT
     )''')
 
     # Waste Table

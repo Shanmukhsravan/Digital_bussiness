@@ -18,6 +18,7 @@
                 <tr>
                     <th>Product Name</th>
                     <th>Variant</th>
+                    <th>Stock</th>
                     <th class="text-end">Selling Price</th>
                 </tr>
             </thead>
@@ -26,6 +27,7 @@
                 <tr class="item-row">
                     <td><strong>{{ item[0] }}</strong></td>
                     <td>{{ item[1] }}</td>
+                    <td><span class="badge {{ 'bg-success' if item[3] > 0 else 'bg-danger' }}">{{ item[3] }}</span></td>
                     <td class="text-end text-primary fw-bold" style="font-size: 1.1rem;">₹{{ "{:,.2f}".format(item[2]) }}</td>
                 </tr>
                 {% endfor %}

@@ -41,14 +41,22 @@
 
             <div class="form-group">
                 <label>Payment Method</label>
-                <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 0.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; background: rgba(16, 185, 129, 0.05); border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.1);">
                         <input type="radio" name="payment_method" value="Cash" checked style="width: 20px; height: 20px;">
                         <span><i class="fas fa-money-bill-wave" style="color: #10b981;"></i> Cash</span>
                     </label>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; background: rgba(99, 102, 241, 0.05); border-radius: 10px; border: 1px solid rgba(99, 102, 241, 0.1);">
                         <input type="radio" name="payment_method" value="PhonePe" style="width: 20px; height: 20px;">
                         <span><i class="fas fa-mobile-screen-button" style="color: #6366f1;"></i> PhonePe</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; background: rgba(245, 158, 11, 0.05); border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.1);">
+                        <input type="radio" name="payment_method" value="Credit" style="width: 20px; height: 20px;">
+                        <span><i class="fas fa-hand-holding-dollar" style="color: var(--warning);"></i> Credit</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; background: rgba(239, 68, 68, 0.05); border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.1);">
+                        <input type="radio" name="payment_method" value="Not Paid" style="width: 20px; height: 20px;">
+                        <span><i class="fas fa-clock-rotate-left" style="color: var(--danger);"></i> Not Paid</span>
                     </label>
                 </div>
             </div>

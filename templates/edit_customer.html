@@ -1,52 +1,89 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="animate-fade" style="max-width: 600px; margin: 0 auto;">
-    <div class="card" style="background: linear-gradient(to right, #6366f1, #a855f7); color: white; margin-bottom: 2rem;">
-        <h1><i class="fas fa-edit"></i> Edit Customer Details</h1>
-        <p style="opacity: 0.9;">Updating record for <strong>{{ customer[4] }}</strong> ({{ customer[5] }} bags)</p>
-    </div>
-
+<div class="animate-fade" style="max-width: 800px; margin: 2rem auto;">
     <div class="card">
+        <h2 style="margin-bottom: 2rem;"><i class="fas fa-edit"></i> Edit Transaction Record</h2>
+        
         <form method="post">
-            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group">
-                    <label>Customer Name</label>
-                    <input name="customer_name" class="form-control" value="{{ customer[0] or '' }}" placeholder="Name">
+            <!-- Customer Section -->
+            <div style="background: rgba(99, 102, 241, 0.03); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                <h4 style="font-size: 0.9rem; color: var(--primary); text-transform: uppercase; margin-bottom: 1rem;">Customer Information</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input name="customer_name" class="form-control" value="{{ sale[4] or '' }}" placeholder="Guest">
+                    </div>
+                    <div class="form-group">
+                        <label>Village</label>
+                        <input name="customer_village" class="form-control" value="{{ sale[5] or '' }}" placeholder="---">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>Village</label>
-                    <input name="customer_village" class="form-control" value="{{ customer[1] or '' }}" placeholder="Village">
+                    <label>Phone Number</label>
+                    <input name="customer_phone" class="form-control" value="{{ sale[7] or '' }}" placeholder="---">
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Phone Number</label>
-                <div style="position: relative;">
-                    <i class="fas fa-phone" style="position: absolute; left: 1rem; top: 1rem; opacity: 0.5;"></i>
-                    <input name="customer_phone" class="form-control" value="{{ customer[2] or '' }}" placeholder="Phone Number" style="padding-left: 2.5rem;">
+            <!-- Transaction Section -->
+            <div style="background: rgba(16, 185, 129, 0.03); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                <h4 style="font-size: 0.9rem; color: var(--secondary); text-transform: uppercase; margin-bottom: 1rem;">Transaction Details</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label>Brand</label>
+                        <select name="brand" class="form-control" required>
+                            {% for b in brands %}
+                            <option value="{{ b }}" {% if b == sale[1] %}selected{% endif %}>{{ b }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity (Bags)</label>
+                        <input name="quantity" type="number" class="form-control" value="{{ sale[2] }}" required>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label>Sale Price (per bag)</label>
+                        <input name="price" type="number" step="0.01" class="form-control" value="{{ sale[3] }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input name="date" type="date" class="form-control" value="{{ sale[6] }}" required>
+                    </div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Payment Method</label>
-                <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                        <input type="radio" name="payment_method" value="Cash" {% if customer[3] == 'Cash' %}checked{% endif %} style="width: 20px; height: 20px;">
-                        <span><i class="fas fa-money-bill-wave" style="color: #10b981;"></i> Cash</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                        <input type="radio" name="payment_method" value="PhonePe" {% if customer[3] == 'PhonePe' %}checked{% endif %} style="width: 20px; height: 20px;">
-                        <span><i class="fas fa-mobile-screen-button" style="color: #6366f1;"></i> PhonePe</span>
-                    </label>
+            <!-- Payment & Source Section -->
+            <div style="background: rgba(245, 158, 11, 0.03); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+                <h4 style="font-size: 0.9rem; color: var(--warning); text-transform: uppercase; margin-bottom: 1rem;">Payment & Source</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select name="payment_method" class="form-control">
+                            <option value="Cash" {% if sale[8] == 'Cash' %}selected{% endif %}>Cash</option>
+                            <option value="UPI" {% if sale[8] == 'UPI' %}selected{% endif %}>UPI</option>
+                            <option value="PhonePe" {% if sale[8] == 'PhonePe' %}selected{% endif %}>PhonePe</option>
+                            <option value="Credit" {% if sale[8] == 'Credit' %}selected{% endif %}>Credit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Load Source</label>
+                        <select name="load_source" class="form-control">
+                            {% for l in loads %}
+                            <option value="{{ l }}" {% if l == sale[11] %}selected{% endif %}>{{ l }}</option>
+                            {% endfor %}
+                            <option value="Current Stock" {% if 'Current Stock' == sale[11] %}selected{% endif %}>Current Stock</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center; padding: 1rem;">
-                    Save Changes
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center;">
+                    <i class="fas fa-save"></i> Update Record
                 </button>
-                <a href="/customers" class="btn" style="flex: 1; background: rgba(0,0,0,0.05); justify-content: center; padding: 1rem;">
+                <a href="/customers" class="btn btn-secondary" style="flex: 1; justify-content: center; background: rgba(0,0,0,0.05);">
                     Cancel
                 </a>
             </div>

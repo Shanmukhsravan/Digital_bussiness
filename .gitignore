@@ -1,11 +1,11 @@
 __pycache__/
-*.pyc
-instance/
+*.py[cod]
+*$py.class
 .env
 .venv
-env/
 venv/
+ENV/
 *.db
-*.log
-.DS_Store
-*.pdf
+.vscode/
+.idea/
+*.swp

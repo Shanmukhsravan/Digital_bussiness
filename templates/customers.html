@@ -5,8 +5,8 @@
     <div class="card" style="background: linear-gradient(135deg, #334155, #1e293b); color: white; border: none; margin-bottom: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fas fa-users-viewfinder"></i> Customer Ledger</h1>
-                <p style="opacity: 0.8;">Comprehensive record of all retail transactions.</p>
+                <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fas fa-users-viewfinder"></i> Customers</h1>
+                <p style="opacity: 0.8;">Comprehensive record of all customers and transactions.</p>
             </div>
             {% if session['role'] == 'admin' %}
                 <button onclick="togglePastSaleForm()" class="btn btn-primary" style="background: white; color: var(--bg-dark); border: none;">
@@ -90,6 +90,7 @@
                         <option value="UPI">UPI</option>
                         <option value="PhonePe">PhonePe</option>
                         <option value="Credit">Credit (Udhari)</option>
+                        <option value="Not Paid">Not Paid</option>
                     </select>
                 </div>
             </div>
@@ -144,6 +145,10 @@
                class="sort-btn {% if sort_by == 'credit' %}active{% endif %}">
                 <i class="fas fa-hand-holding-dollar"></i> Credit Only
             </a>
+            <a href="/customers?sort=pending{% if search %}&search={{ search }}{% endif %}" 
+               class="sort-btn {% if sort_by == 'pending' %}active{% endif %}">
+                <i class="fas fa-clock-rotate-left"></i> Pending Only
+            </a>
         </div>
 
         <div class="table-container">
@@ -176,6 +181,9 @@
                         <td>
                             <div style="font-weight: 600;">{{ c[0] }}</div>
                             <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">{{ c[1] }} Bags</span>
+                            <div style="margin-top: 0.25rem; font-size: 0.85rem; color: var(--primary); font-weight: 600;">
+                                ₹{{ "{:,.2f}".format(c[9] or 0) }} / bag
+                            </div>
                         </td>
                         <td>
                             {% if c[5] == 'Cash' %}
@@ -191,6 +199,11 @@
                         {% if session['role'] == 'admin' %}
                         <td>
                             <div style="display: flex; gap: 0.5rem;">
+                                {% if session['role'] == 'admin' and c[5] in ['Credit', 'Not Paid'] %}
+                                <a href="/mark_paid/{{ c[6] }}" class="btn btn-primary" style="padding: 0.4rem 0.75rem; font-size: 0.85rem; background: var(--secondary); border: none;" onclick="return confirm('Mark this transaction as PAID?')">
+                                    <i class="fas fa-check-circle"></i> Paid
+                                </a>
+                                {% endif %}
                                 <a href="/edit_customer/{{ c[6] }}" class="btn btn-secondary" style="padding: 0.4rem 0.75rem; font-size: 0.85rem;">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>

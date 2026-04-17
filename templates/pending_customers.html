@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="animate-fade">
+    <div class="card" style="background: linear-gradient(135deg, var(--warning), #f59e0b); color: white; border: none; margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fas fa-hand-holding-dollar"></i> Pending Customers</h1>
+                <p style="opacity: 0.9;">Total outstanding balance across all credit and unpaid sales.</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 0.8rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.05em;">Total Pending</div>
+                <div style="font-size: 1.8rem; font-weight: 800;">₹{{ "{:,.2f}".format(pending_list|sum(attribute='3')) }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Village / Contact</th>
+                        <th>Transactions</th>
+                        <th>Balance Due</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in pending_list %}
+                    <tr>
+                        <td><strong style="font-size: 1.05rem;">{{ p[0] or 'Guest' }}</strong></td>
+                        <td>
+                            <div style="font-size: 0.9rem;"><i class="fas fa-location-dot" style="opacity: 0.5;"></i> {{ p[1] or '---' }}</div>
+                            {% if p[2] %}<div style="font-size: 0.8rem; opacity: 0.7; margin-top: 0.25rem;"><i class="fas fa-phone"></i> {{ p[2] }}</div>{% endif %}
+                        </td>
+                        <td>
+                            <span class="badge" style="background: rgba(0,0,0,0.05); color: var(--text-muted);">{{ p[4] }} records</span>
+                        </td>
+                        <td>
+                            <div style="font-weight: 800; color: var(--danger); font-size: 1.1rem;">₹{{ "{:,.2f}".format(p[3]) }}</div>
+                        </td>
+                        <td>
+                            <a href="/customers?search={{ p[0] if p[0] else '' }}&sort=pending" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                                <i class="fas fa-eye"></i> View & Pay
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 4rem; opacity: 0.5;">
+                            <i class="fas fa-check-circle" style="font-size: 3rem; display: block; margin-bottom: 1rem; color: var(--secondary);"></i>
+                            No pending payments! All accounts are clear.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -40,6 +40,13 @@
             <a href="{{ url_for('kirana_palm_wine') }}" class="btn btn-sm btn-outline-primary">Manage</a>
         </div>
         <div class="stat-desc">Today's Profit/Loss</div>
+        {% if palm_record and session['role'] == 'admin' %}
+        <div class="mt-2 text-end">
+            <a href="/kirana/undo_palm/{{ palm_record[0] }}" class="text-danger small" onclick="return confirm('Undo today\'s entire Palm Wine entry?')">
+                <i class="fas fa-rotate-left"></i> Undo Today
+            </a>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -102,6 +109,46 @@
             </div>
             {% else %}
             <div class="text-center py-4 text-muted">All items are sufficiently stocked.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 animate__animated animate__fadeInRight">
+            <h5 class="mb-4 d-flex align-items-center">
+                <i class="fas fa-receipt text-success me-2"></i> Recent Sales (Individuals)
+            </h5>
+            {% if recent_sales %}
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            {% if session['role'] == 'admin' %}<th>Action</th>{% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in recent_sales %}
+                        <tr>
+                            <td class="small text-muted">{{ s[4] }}</td>
+                            <td><strong>{{ s[1] }}</strong> <small>({{ s[2] }})</small></td>
+                            <td>{{ s[3] }}</td>
+                            {% if session['role'] == 'admin' %}
+                            <td>
+                                <a href="/kirana/undo_sale/{{ s[0] }}" class="text-danger" onclick="return confirm('Undo this sale?')">
+                                    <i class="fas fa-rotate-left"></i>
+                                </a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">No transactions recorded yet.</div>
             {% endif %}
         </div>
     </div>
