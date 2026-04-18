@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% include 'ticker_bot.html' %}
 
 <div class="animate-fade">
     <div class="card" style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none;">
@@ -36,11 +37,13 @@
         </div>
     </div>
 
+    {% if panel_view == 'admin' %}
     <div style="text-align: right; margin-bottom: 1.5rem;">
         <button onclick="refreshFinancials()" class="btn btn-secondary" style="background: rgba(99, 102, 241, 0.05); color: var(--primary); border: 1px solid rgba(99, 102, 241, 0.1); padding: 0.5rem 1rem; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
             <i class="fas fa-sync-alt" id="refresh-icon"></i> Sync & Refresh Profits
         </button>
     </div>
+    {% endif %}
 
     <script>
     function refreshFinancials() {
@@ -89,6 +92,8 @@
             <span class="today-label">Bags Sold Today:</span>
             <span class="today-value" style="font-size: 1.1rem; margin-left: 0.4rem;">{{ daily_bags }} <span style="font-size: 0.75rem; opacity: 0.5;">Bags</span></span>
         </div>
+        
+        {% if panel_view == 'admin' %}
         <div class="today-divider"></div>
         <div class="today-item">
             <span class="today-label">Today Revenue:</span>
@@ -103,6 +108,7 @@
                 <div class="tooltip-content">Verified: Sum of all customer sale profits today.</div>
             </span>
         </div>
+        {% endif %}
     </div>
 
     <!-- ========== ADMIN PANEL VIEW ========== -->

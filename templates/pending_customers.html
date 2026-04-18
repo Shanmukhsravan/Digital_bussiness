@@ -8,10 +8,12 @@
                 <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fas fa-hand-holding-dollar"></i> Pending Customers</h1>
                 <p style="opacity: 0.9;">Total outstanding balance across all credit and unpaid sales.</p>
             </div>
+            {% if session['role'] == 'admin' %}
             <div style="text-align: right;">
                 <div style="font-size: 0.8rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.05em;">Total Pending</div>
                 <div style="font-size: 1.8rem; font-weight: 800;">₹{{ "{:,.2f}".format(pending_list|sum(attribute='3')) }}</div>
             </div>
+            {% endif %}
         </div>
     </div>
 
@@ -23,7 +25,9 @@
                         <th>Customer</th>
                         <th>Village / Contact</th>
                         <th>Transactions</th>
+                        {% if session['role'] == 'admin' %}
                         <th>Balance Due</th>
+                        {% endif %}
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -38,9 +42,11 @@
                         <td>
                             <span class="badge" style="background: rgba(0,0,0,0.05); color: var(--text-muted);">{{ p[4] }} records</span>
                         </td>
+                        {% if session['role'] == 'admin' %}
                         <td>
                             <div style="font-weight: 800; color: var(--danger); font-size: 1.1rem;">₹{{ "{:,.2f}".format(p[3]) }}</div>
                         </td>
+                        {% endif %}
                         <td>
                             <a href="/customers?search={{ p[0] if p[0] else '' }}&sort=pending" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
                                 <i class="fas fa-eye"></i> View & Pay

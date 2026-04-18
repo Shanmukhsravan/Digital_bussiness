@@ -3,56 +3,63 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-5">
-        <div class="card animate__animated animate__fadeInUp">
-            <h4 class="text-center mb-4">Update Palm Wine</h4>
-            
-            <div class="text-center mb-4">
-                <div class="p-3 bg-light rounded-circle d-inline-block">
-                    <i class="fas fa-glass-martini-alt fa-3x text-primary"></i>
+        <div class="animate-fade">
+            <!-- Daily Progress Badge -->
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div class="badge" style="background: rgba(5, 150, 105, 0.1); color: #059669; padding: 1rem 2rem; border-radius: 20px; font-size: 1.1rem; border: 1px solid rgba(5, 150, 105, 0.2);">
+                    <i class="fas fa-glass-martini-alt"></i> Today: <strong>{{ total_glasses_today }}</strong> Glasses Sold
                 </div>
-                <p class="text-muted mt-2">Recording glasses sold today</p>
             </div>
 
-            <form method="post">
-                <div class="mb-4">
-                    <label class="form-label d-block text-center">Glasses Sold</label>
-                    <div class="glass-counter">
-                        <button type="button" class="counter-btn" onclick="decrement()">-</button>
-                        <div class="counter-value" id="display">1</div>
-                        <button type="button" class="counter-btn" onclick="increment()">+</button>
-                    </div>
-                    <input type="hidden" name="glasses_sold" id="glasses_input" value="1">
-                    <div class="form-text text-center mt-2">Tap + or - to set the count, then add record.</div>
-                </div>
+            <div class="card" style="border-top: 5px solid #059669; box-shadow: 0 15px 40px rgba(0,0,0,0.05);">
+                <h4 style="text-align: center; margin-bottom: 2rem; color: var(--text-light);">Record New Sale</h4>
                 
-                <button type="submit" class="btn btn-success w-100 py-3">
-                    <i class="fas fa-plus me-2"></i> Add Record
-                </button>
-            </form>
+                <form method="post">
+                    <div style="margin-bottom: 2.5rem;">
+                        <label style="display: block; text-align: center; font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em; margin-bottom: 1rem;">
+                            Number of Glasses
+                        </label>
+                        <div class="glass-counter">
+                            <button type="button" class="counter-btn" onclick="decrement()">-</button>
+                            <div class="counter-value" id="display">1</div>
+                            <button type="button" class="counter-btn" onclick="increment()">+</button>
+                        </div>
+                        <input type="hidden" name="glasses_sold" id="glasses_input" value="1">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1.25rem; border-radius: 16px; font-size: 1.1rem; font-weight: 700; background: linear-gradient(135deg, #059669, #10b981); border: none; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); transition: transform 0.2s;">
+                        <i class="fas fa-plus-circle"></i> Add to Today's Record
+                    </button>
+                </form>
 
-            <script>
-                function increment() {
-                    const display = document.getElementById('display');
-                    const input = document.getElementById('glasses_input');
-                    let val = parseInt(display.innerText);
-                    val++;
-                    display.innerText = val;
-                    input.value = val;
-                }
-                function decrement() {
-                    const display = document.getElementById('display');
-                    const input = document.getElementById('glasses_input');
-                    let val = parseInt(display.innerText);
-                    if (val > 1) {
-                        val--;
-                        display.innerText = val;
-                        input.value = val;
-                    }
-                }
-            </script>
-            
-            <a href="{{ url_for('kirana_add_sale') }}" class="btn btn-outline-secondary w-100 mt-3">Back to Sale Entry</a>
+                <div style="margin-top: 2rem; text-align: center;">
+                    <a href="{{ url_for('kirana_add_sale') }}" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none;">
+                        <i class="fas fa-arrow-left"></i> Back to Main Inventory
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    function increment() {
+        const display = document.getElementById('display');
+        const input = document.getElementById('glasses_input');
+        let val = parseInt(display.innerText);
+        val++;
+        display.innerText = val;
+        input.value = val;
+    }
+    function decrement() {
+        const display = document.getElementById('display');
+        const input = document.getElementById('glasses_input');
+        let val = parseInt(display.innerText);
+        if (val > 1) {
+            val--;
+            display.innerText = val;
+            input.value = val;
+        }
+    }
+</script>
 {% endblock %}

@@ -158,8 +158,10 @@
                         <th>Date / Source</th>
                         <th>Customer Details</th>
                         <th>Transaction Details</th>
+                        {% if session['role'] == 'admin' %}
                         <th>Financial Summary</th>
                         <th>Profit / Earned</th>
+                        {% endif %}
                         <th>Payment Method</th>
                         {% if session['role'] == 'admin' %}<th>Actions</th>{% endif %}
                     </tr>
@@ -187,6 +189,7 @@
                                 ₹{{ "{:,.2f}".format(c[9] or 0) }} / bag
                             </div>
                         </td>
+                        {% if session['role'] == 'admin' %}
                         <td>
                             {% set total_bill = (c[9] or 0) * (c[1] or 0) %}
                             {% set amt_paid = c[11] or 0 %}
@@ -219,6 +222,7 @@
                                 ({{ "{:,.0f}".format(sale_price) }} - {{ "{:,.0f}".format(buy_price) }}) × {{ qty }}
                             </div>
                         </td>
+                        {% endif %}
                         <td>
                             {% if c[5] == 'Cash' %}
                                 <span class="badge badge-success"><i class="fas fa-money-bill-wave"></i> Cash</span>

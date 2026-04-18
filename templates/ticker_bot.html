@@ -1,0 +1,77 @@
+<div id="ai-ticker-container">
+    <div class="ai-ticker-wrapper">
+        <div class="ticker-content" id="ticker-text">
+            <span class="ticker-bot"><i class="fas fa-shopping-basket"></i></span>
+            <span class="ticker-msg">Hello! I am your BuildBasket Advisor. Analyzing construction and retail data...</span>
+        </div>
+    </div>
+</div>
+
+<style>
+#ai-ticker-container {
+    width: 100%;
+    background: linear-gradient(90deg, var(--bg-dark), var(--bg-light));
+    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+    height: 40px;
+    overflow: hidden;
+    position: relative;
+    z-index: 999;
+}
+
+.ai-ticker-wrapper {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    animation: ticker 25s linear infinite;
+    white-space: nowrap;
+}
+
+.ticker-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-left: 100%;
+}
+
+.ticker-bot {
+    font-size: 1.2rem;
+    color: var(--primary);
+    animation: walking-bob 1s ease-in-out infinite;
+}
+
+.ticker-msg {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-light);
+    letter-spacing: 0.02em;
+}
+
+body.dark .ticker-msg { color: var(--text-dark); }
+
+@keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-200%); }
+}
+
+@keyframes walking-bob {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-3px) rotate(5deg); }
+}
+
+#ai-ticker-container:hover .ai-ticker-wrapper {
+    animation-play-state: paused;
+}
+</style>
+
+<script>
+async function updateTicker() {
+    try {
+        const response = await fetch('/api/ai/analyze');
+        const data = await response.json();
+        if (data.response) {
+            document.querySelector('.ticker-msg').innerText = data.response;
+        }
+    } catch (e) {}
+}
+setTimeout(updateTicker, 2000);
+</script>

@@ -9,6 +9,8 @@ import os
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
+from ai_engine import BusinessAnalyzer
+
 
 app = Flask(__name__) 
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key_rajanna')
@@ -28,16 +30,16 @@ except Exception as e:
 # Helper to provide current app context
 @app.context_processor
 def utility_processor():
-    return dict(current_app_name=session.get('current_app', 'Digital_Business'))
+    return dict(current_app_name=session.get('current_app', 'BuildBasket'))
 
 @app.route('/switch_app')
 def switch_app():
     # Toggle between apps
-    if session.get('current_app') == 'Smart Kirana':
-        session['current_app'] = 'Digital_Business'
+    if session.get('current_app') == 'BuildBasket Daily':
+        session['current_app'] = 'BuildBasket Construction'
         return redirect(url_for('dashboard'))
     else:
-        session['current_app'] = 'Smart Kirana'
+        session['current_app'] = 'BuildBasket Daily'
         return redirect(url_for('kirana_dashboard'))
 
 # ---------------- AUTH DECORATOR ---------------- 
@@ -80,7 +82,7 @@ def login():
             session['role'] = user[3]
             # Set default app on login
             if 'current_app' not in session:
-                session['current_app'] = 'Cement Pro'
+                session['current_app'] = 'BuildBasket Construction'
             return redirect(url_for('dashboard'))
         else:
             return "Invalid Credentials", 401
@@ -110,7 +112,8 @@ def switch_panel():
 @app.route('/') 
 @login_required
 def dashboard():
-    session['current_app'] = 'Cement Pro'
+    status = health_check()
+    session['current_app'] = 'BuildBasket Construction'
     conn = connect() 
     c = conn.cursor() 
  
@@ -416,6 +419,30 @@ def send_admin_alert():
     return render_template("send_alert.html")
 
 
+# ---------------- AI ASSISTANT API ----------------
+@app.route('/api/ai/analyze', methods=['GET', 'POST'])
+@login_required
+def ai_analyze():
+    app_type = session.get('current_app', 'Cement Pro')
+    role = session.get('role', 'shopkeep')
+    
+    conn = connect()
+    try:
+        analyzer = BusinessAnalyzer(conn, role, app_type)
+        if request.method == 'POST':
+            user_query = request.json.get('query', '')
+            response = analyzer.query(user_query)
+            return jsonify({"response": response})
+        else:
+            # Traditional summary fallback
+            analysis = analyzer.get_analysis()
+            return jsonify({"response": analysis})
+    except Exception as e:
+        print(f"AI Analysis Error: {e}")
+        return jsonify({"error": "Analysis temporarily unavailable"}), 500
+    finally:
+        conn.close()
+
 # ---------------- CUSTOMER LEDGER ----------------
 @app.route('/customers')
 @login_required
@@ -621,7 +648,7 @@ def pending_customers():
 @app.route("/kirana/")
 @login_required
 def kirana_dashboard():
-    session['current_app'] = 'Smart Kirana'
+    session['current_app'] = 'BuildBasket Daily'
     if session.get('role') != 'admin':
         return redirect(url_for('kirana_add_sale'))
 
@@ -826,11 +853,12 @@ def kirana_add_sale():
 @app.route("/kirana/palm_update", methods=["GET", "POST"])
 @login_required
 def kirana_palm_update():
+    today = datetime.now().strftime("%Y-%m-%d")
+    conn = connect()
+    c = conn.cursor()
+
     if request.method == "POST":
         glasses = int(request.form["glasses_sold"])
-        today = datetime.now().strftime("%Y-%m-%d")
-        conn = connect()
-        c = conn.cursor()
         c.execute("SELECT id FROM kirana_palm_wine WHERE date = %s", (today,))
         existing = c.fetchone()
         if existing:
@@ -840,7 +868,12 @@ def kirana_palm_update():
         conn.commit()
         conn.close()
         return redirect(url_for('kirana_palm_update'))
-    return render_template("kirana_palm_update.html")
+    
+    c.execute("SELECT glasses_sold FROM kirana_palm_wine WHERE date = %s", (today,))
+    row = c.fetchone()
+    total_glasses_today = row[0] if row else 0
+    conn.close()
+    return render_template("kirana_palm_update.html", total_glasses_today=total_glasses_today)
 
 # ---------------- KIRANA UPDATE STOCK ----------------
 @app.route("/kirana/update_stock", methods=["GET", "POST"])

@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
     <link rel="manifest" href="/static/manifest.json">
-    <title>Digital_Business | Smart Dashboard</title>
+    <title>BuildBasket | Smart Enterprise Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <!-- Load Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -23,29 +23,25 @@
     </div>
 
     <nav class="navbar">
-        <div class="logo" style="font-weight: 800; font-size: 1.5rem; color: var(--primary);">
-            {% if current_app_name == 'Smart Kirana' %}
-                <i class="fas fa-store"></i> SMART<span style="color: var(--accent);">KIRANA</span>
-            {% else %}
-                <i class="fas fa-briefcase"></i> DIGITAL<span style="color: var(--accent);">BUSINESS</span>
-            {% endif %}
+        <div class="logo" style="font-weight: 900; font-size: 1.8rem; letter-spacing: -0.05em; color: var(--primary);">
+            <i class="fas fa-shopping-basket"></i> BUILD<span style="color: var(--secondary);">BASKET</span>
         </div>
 
         {% if session['user_id'] %}
         <div class="app-switcher">
             <a href="{{ url_for('switch_app') }}" class="switcher-pill">
-                <i class="fas fa-exchange-alt"></i>
-                <span>Switch to {{ 'Digital_Business' if current_app_name == 'Smart Kirana' else 'Smart Kirana' }}</span>
+                <i class="fas fa-layer-group"></i>
+                <span>{{ 'Switch to Construction' if current_app_name == 'BuildBasket Daily' else 'Switch to Daily Items' }}</span>
             </a>
         </div>
         {% endif %}
 
         <div class="nav-links">
             {% if session['user_id'] %}
-                {% if current_app_name == 'Smart Kirana' %}
+                {% if current_app_name == 'BuildBasket Daily' %}
                     <a href="{{ url_for('kirana_dashboard') }}"><i class="fas fa-chart-line"></i> Dashboard</a>
-                    <a href="{{ url_for('kirana_add_sale') }}"><i class="fas fa-plus"></i> Sale</a>
-                    <a href="{{ url_for('kirana_report') }}"><i class="fas fa-file-invoice"></i> Report</a>
+                    <a href="{{ url_for('kirana_add_sale') }}"><i class="fas fa-plus-circle"></i> New Sale</a>
+                    <a href="{{ url_for('kirana_report') }}"><i class="fas fa-file-invoice"></i> Reports</a>
                 {% else %}
                     <a href="/"><i class="fas fa-chart-line"></i> Dashboard</a>
                     <a href="/pending_customers"><i class="fas fa-hand-holding-dollar"></i> Pending</a>
@@ -54,7 +50,11 @@
                         <a href="/send_admin_alert" title="Send Alert to Staff"><i class="fas fa-bullhorn"></i></a>
                     {% endif %}
                 {% endif %}
-                
+                <!-- AI Business Bot (Top Placement) -->
+                <div id="ai-fab" onclick="toggleAI()" class="walking-bot" title="Ask AI Assistant">
+                    <i class="fas fa-robot"></i>
+                </div>
+
                 <div class="notification-bell" id="bell-btn" onclick="toggleTray()">
                     <i class="fas fa-bell"></i>
                     <span class="notification-badge" id="notif-badge" style="display: none;">0</span>
@@ -82,6 +82,32 @@
 
     <div class="container">
         {% block content %}{% endblock %}
+    </div>
+
+    <!-- AI Business Assistant UI -->
+    <div id="ai-fab" onclick="toggleAI()">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <div id="ai-modal">
+        <div class="ai-header">
+            <span><i class="fas fa-sparkles"></i> Business Advisor</span>
+            <i class="fas fa-times" onclick="toggleAI()" style="cursor: pointer;"></i>
+        </div>
+        <div class="ai-body" id="ai-content">
+            <!-- Chat history will be injected here -->
+        </div>
+        <div class="ai-footer">
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <button class="quick-btn" onclick="sendQuickQuery('Give me some business advice')">💡 Advice</button>
+                <button class="quick-btn" onclick="sendQuickQuery('What is my profit today?')">💰 Profit</button>
+                <button class="quick-btn" onclick="sendQuickQuery('How is my stock?')">📦 Stock</button>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="ai-input" placeholder="Ask me anything..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendUserQuery()" class="btn btn-primary" style="padding: 0.5rem 1rem;"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -180,6 +206,87 @@
             checkNotifications();
             toggleTray();
         }
+
+        // --- AI Advisor Chat Logic ---
+        function toggleAI() {
+            const modal = document.getElementById('ai-modal');
+            modal.classList.toggle('show');
+            if (modal.classList.contains('show')) {
+                renderChatHistory();
+                document.getElementById('ai-input').focus();
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendUserQuery();
+        }
+
+        let chatHistory = JSON.parse(sessionStorage.getItem('ai_chat_history') || '[]');
+        if (chatHistory.length === 0) {
+            chatHistory.push({ role: 'ai', text: "Hello! I'm your Business Advisor. How can I help you improve your business today?" });
+            sessionStorage.setItem('ai_chat_history', JSON.stringify(chatHistory));
+        }
+
+        function renderChatHistory() {
+            const content = document.getElementById('ai-content');
+            content.innerHTML = chatHistory.map(msg => `
+                <div class="chat-msg ${msg.role}">
+                    <div class="msg-bubble">${msg.text.replace(/\n/g, '<br>')}</div>
+                </div>
+            `).join('');
+            content.scrollTop = content.scrollHeight;
+        }
+
+        async function sendUserQuery() {
+            const input = document.getElementById('ai-input');
+            const query = input.value.trim();
+            if (!query) return;
+
+            input.value = '';
+            chatHistory.push({ role: 'user', text: query });
+            renderChatHistory();
+
+            // Add typing indicator
+            const content = document.getElementById('ai-content');
+            const loadingId = 'loading-' + Date.now();
+            content.innerHTML += `<div class="chat-msg ai" id="${loadingId}"><div class="msg-bubble"><i class="fas fa-circle-notch fa-spin"></i></div></div>`;
+            content.scrollTop = content.scrollHeight;
+
+            try {
+                const response = await fetch('/api/ai/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                });
+                const data = await response.json();
+                
+                document.getElementById(loadingId).remove();
+                const aiText = data.response || data.error || "I'm sorry, I couldn't process that.";
+                chatHistory.push({ role: 'ai', text: aiText });
+                sessionStorage.setItem('ai_chat_history', JSON.stringify(chatHistory));
+                renderChatHistory();
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                chatHistory.push({ role: 'ai', text: "Connection error. Please try again." });
+                renderChatHistory();
+            }
+        }
+
+        function sendQuickQuery(q) {
+            document.getElementById('ai-input').value = q;
+            sendUserQuery();
+        }
+
+        // Close UI on outside click
+        document.addEventListener('mousedown', (e) => {
+            const tray = document.getElementById('notification-tray');
+            const modal = document.getElementById('ai-modal');
+            const bell = document.getElementById('bell-btn');
+            const bot = document.getElementById('ai-fab');
+            
+            if (tray.style.display === 'block' && !tray.contains(e.target) && !bell.contains(e.target)) toggleTray();
+            if (modal.classList.contains('show') && !modal.contains(e.target) && !bot.contains(e.target)) toggleAI();
+        });
     </script>
 </body>
 </html>
